@@ -1,0 +1,379 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<title>组网方案 · PLAN-0712-0001 · Demo v1</title>
+<style>
+@font-face{font-family:"NR";src:url(fonts/newsreader-400.woff2) format("woff2");font-weight:400}
+@font-face{font-family:"NSerif";src:url(fonts/noto-serif-sc-400.woff2) format("woff2");font-weight:400}
+@font-face{font-family:"NSerif";src:url(fonts/noto-serif-sc-600.woff2) format("woff2");font-weight:600}
+@font-face{font-family:"NSans";src:url(fonts/NotoSansSC-var.ttf) format("truetype");font-weight:100 900}
+@font-face{font-family:"JBM";src:url(fonts/JetBrainsMono-var.ttf) format("truetype");font-weight:100 800}
+:root{--bg:#F3F1EC;--sheet:#FFFFFF;--ink:#15171C;--ink2:#545A66;--ink3:#959AA3;--rule:#E4E1DA;--rule2:#EFEDE8;
+  --blue:#0D3BE8;--blue-t:#EEF2FF;--gold:#A67C25;--gold-t:#FBF4E3;--gold-r:#EBDAB0;--red:#B4442E;--red-t:#FBEDE8;--green:#1F7A5A;--green-t:#E8F4EE}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:NSans,"PingFang SC","Microsoft YaHei",system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+a{color:inherit}
+button{font:inherit;cursor:pointer}
+/* 顶栏 */
+.bar{position:sticky;top:0;z-index:20;height:62px;display:flex;align-items:center;justify-content:space-between;padding:0 32px;background:rgba(243,241,236,.92);backdrop-filter:blur(8px);border-bottom:1px solid var(--rule)}
+.brand{display:flex;align-items:center;gap:12px;font:600 16px NSerif;letter-spacing:.1em}.brand img{height:20px}
+.steps{display:flex;gap:26px;font:400 13px NSans;color:var(--ink3)}.steps i{font:500 11px JBM;font-style:normal;margin-right:6px}
+.steps b{color:var(--ink);font-weight:500;position:relative}.steps b::after{content:"";position:absolute;left:0;right:0;bottom:-21px;height:2px;background:var(--ink)}
+.acts{display:flex;gap:8px}
+.btn{border:1px solid var(--rule);background:#fff;color:var(--ink);font:500 13px NSans;padding:8px 14px;border-radius:9px}
+.btn:hover{border-color:var(--ink3)}
+.btn.pri{background:var(--ink);color:#fff;border-color:var(--ink)}
+/* 布局 */
+.wrap{display:grid;grid-template-columns:220px minmax(0,1fr);gap:40px;max-width:1280px;margin:0 auto;padding:36px 32px 120px}
+.toc{position:sticky;top:96px;align-self:start}
+.toc .t{font:500 10.5px JBM;letter-spacing:.28em;color:var(--ink3);margin-bottom:12px}
+.toc a{display:flex;gap:10px;padding:7px 0;font:400 13.5px NSans;color:var(--ink3);text-decoration:none;border-left:2px solid transparent;padding-left:12px;margin-left:-14px}
+.toc a i{font:500 11px JBM;font-style:normal;width:18px}
+.toc a.on{color:var(--ink);border-left-color:var(--ink)}
+.toc .meta{margin-top:24px;padding-top:16px;border-top:1px solid var(--rule);font:400 12px/1.9 NSans;color:var(--ink3)}
+.toc .meta b{color:var(--ink);font-weight:500}
+.doc{background:var(--sheet);border:1px solid var(--rule);border-radius:6px;box-shadow:0 1px 0 #fff inset,0 30px 70px -50px rgba(30,35,60,.35)}
+/* 方案头 */
+.head{padding:44px 56px 30px;border-bottom:2px solid var(--ink);position:relative}
+.head small{font:500 11px JBM;letter-spacing:.3em;color:var(--ink3)}
+.head h1{margin:12px 0 6px;font:600 34px/1.3 NSerif;letter-spacing:.06em}
+.head .sub{font:400 15px NSans;color:var(--ink2)}
+.hmeta{display:grid;grid-template-columns:repeat(5,1fr);margin-top:26px;border:1px solid var(--rule);border-radius:8px}
+.hmeta div{padding:12px 14px}.hmeta div+div{border-left:1px solid var(--rule)}
+.hmeta span{display:block;font:500 10px JBM;letter-spacing:.2em;color:var(--ink3)}
+.hmeta b{display:block;margin-top:5px;font:500 14px NSans}
+.hmeta b.mono{font:500 13.5px JBM;letter-spacing:.06em}
+.stamp{position:absolute;right:56px;top:38px;border:2px solid var(--gold);color:var(--gold);padding:8px 16px;transform:rotate(-4deg);text-align:center}
+.stamp b{display:block;font:600 18px NSerif;letter-spacing:.3em;margin-right:-.3em}.stamp span{display:block;margin-top:2px;font:500 9.5px JBM;letter-spacing:.16em}
+/* 章节 */
+.sec{padding:40px 56px;border-bottom:1px solid var(--rule)}
+.sec:last-child{border-bottom:0}
+.sh{display:flex;align-items:baseline;gap:14px;margin-bottom:6px}
+.sh i{font:500 12px JBM;font-style:normal;color:var(--ink3)}
+.sh h2{margin:0;font:600 22px NSerif;letter-spacing:.08em}
+.lead{margin:0 0 20px;font:400 14px/1.8 NSans;color:var(--ink2)}
+p.b{margin:0 0 12px;font:400 15px/1.9 NSans}
+.kpi{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:18px 0 6px}
+.kpi div{border:1px solid var(--rule);border-radius:8px;padding:14px 16px}
+.kpi span{display:block;font:500 10.5px JBM;letter-spacing:.2em;color:var(--ink3)}
+.kpi b{display:block;margin-top:6px;font:400 30px NR}
+.kpi b em{font:400 14px NSans;font-style:normal;color:var(--ink3);margin-left:4px}
+.kpi small{display:block;margin-top:2px;font:400 12px NSans;color:var(--ink2)}
+/* 表格 */
+table{width:100%;border-collapse:collapse;font-size:13.5px}
+th{text-align:left;font:500 10.5px JBM;letter-spacing:.16em;color:var(--ink3);padding:10px 12px;border-bottom:1.5px solid var(--ink);white-space:nowrap}
+td{padding:12px;border-bottom:1px solid var(--rule2);vertical-align:top;line-height:1.65}
+td.no{font:500 12px JBM;color:var(--ink3);width:36px}
+.src{display:inline-block;font:500 10px JBM;letter-spacing:.1em;padding:2px 6px;border-radius:4px;white-space:nowrap}
+.src.u{color:var(--blue);background:var(--blue-t)}.src.g{color:var(--gold);background:var(--gold-t)}
+.ag{font-weight:500}
+.ag small{display:block;font:400 12px NSans;color:var(--ink3)}
+.gapr td{background:#FFFBF9}
+.tag{display:inline-block;font:500 11.5px NSans;padding:2px 8px;border-radius:4px}
+.tag.red{color:var(--red);background:var(--red-t)}.tag.green{color:var(--green);background:var(--green-t)}.tag.gold{color:var(--gold);background:var(--gold-t)}
+.tbd{color:var(--gold);font-size:12px;white-space:nowrap}
+/* 架构图 */
+.arch{border:1px solid var(--rule);border-radius:10px;background:#FBFAF7;padding:8px 0 4px;margin-top:6px}
+.arch svg{display:block;width:100%;height:auto}
+.legend{display:flex;gap:18px;padding:6px 18px 10px;font:400 12px NSans;color:var(--ink3)}
+.legend i{display:inline-block;width:18px;height:2px;vertical-align:middle;margin-right:6px}
+/* 支持清单 */
+.cl{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}
+.ci{border:1px solid var(--rule);border-radius:10px;padding:16px 18px}
+.ci h4{margin:0 0 10px;display:flex;justify-content:space-between;align-items:center;font:600 15px NSans}
+.ci h4 span{font:500 10.5px JBM;letter-spacing:.14em;color:var(--ink3)}
+.ci ul{margin:0;padding:0;list-style:none}
+.ci li{display:grid;grid-template-columns:16px 1fr auto;gap:8px;padding:6px 0;font:400 13.5px/1.6 NSans;border-top:1px dashed var(--rule2)}
+.ci li:first-child{border-top:0}
+.ci li i{width:12px;height:12px;border:1.5px solid var(--ink3);border-radius:3px;margin-top:5px}
+.ci li em{font:500 11px NSans;font-style:normal;color:var(--ink3);white-space:nowrap}
+.sv{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.sv .ci h4{display:block}.sv .ci h4 small{display:block;margin-top:4px;font:400 12px NSans;color:var(--ink3)}
+.sv .ci li{grid-template-columns:16px 1fr}
+.sv .ci li i{border:0;width:auto;height:auto;margin:0;font:500 11px JBM;font-style:normal;color:var(--blue)}
+/* 分工表 */
+.raci td.c{text-align:center;width:120px}
+.r{display:inline-grid;place-items:center;width:24px;height:24px;border-radius:50%;font:600 11px JBM}
+.r.R{background:var(--ink);color:#fff}.r.C{border:1.5px solid var(--ink3);color:var(--ink2)}.r.S{background:var(--rule2);color:var(--ink3)}
+/* 甘特 */
+.gantt{border:1px solid var(--rule);border-radius:10px;overflow:hidden}
+.gr{display:grid;grid-template-columns:220px 1fr;border-top:1px solid var(--rule2)}
+.gr:first-child{border-top:0;background:#FBFAF7}
+.gr .l{padding:12px 16px;font:400 13.5px NSans}.gr .l small{display:block;font:400 11.5px NSans;color:var(--ink3);margin-top:2px}
+.gr .tl{position:relative;display:grid;grid-template-columns:repeat(8,1fr)}
+.gr .tl span{border-left:1px solid var(--rule2);font:500 10.5px JBM;color:var(--ink3);padding:13px 0 0 8px}
+.gr .bar2{position:absolute;top:13px;height:22px;border-radius:5px;background:var(--ink);color:#fff;font:500 11px NSans;display:flex;align-items:center;padding:0 8px;white-space:nowrap}
+.gr .bar2.b{background:var(--blue)}.gr .bar2.g{background:var(--gold)}.gr .bar2.gr2{background:var(--green)}
+.ms{position:absolute;top:16px;width:14px;height:14px;transform:rotate(45deg);background:var(--gold)}
+/* 列表 */
+.two{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.box{border:1px solid var(--rule);border-radius:10px;padding:16px 18px}
+.box h4{margin:0 0 10px;font:600 14.5px NSans;display:flex;gap:8px;align-items:center}
+.box ul{margin:0;padding-left:18px;font:400 13.5px/1.9 NSans;color:var(--ink)}
+.box.in h4::before{content:"包含";font:500 10.5px NSans;color:var(--green);background:var(--green-t);padding:2px 7px;border-radius:4px}
+.box.out h4::before{content:"不包含";font:500 10.5px NSans;color:var(--red);background:var(--red-t);padding:2px 7px;border-radius:4px}
+.fee td:last-child{font:500 13px NSans;color:var(--gold);white-space:nowrap}
+.p2{display:grid;grid-template-columns:1.2fr 1fr;gap:20px;align-items:center;border:1px solid var(--gold-r);background:var(--gold-t);border-radius:12px;padding:22px 24px}
+.p2 h4{margin:0 0 6px;font:600 17px NSans}.p2 p{margin:0;font:400 13.5px/1.8 NSans;color:var(--ink2)}
+.p2 .opt{background:#fff;border:1px solid var(--gold-r);border-radius:10px;padding:14px 16px;font:400 13px/1.8 NSans}
+.p2 .opt b{display:block;font:600 13.5px NSans;margin-bottom:2px}
+.next{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.nx{border:1px solid var(--rule);border-radius:12px;padding:20px;text-align:left;background:#fff;transition:all .2s}
+.nx:hover{border-color:var(--ink);transform:translateY(-2px)}
+.nx.pri{background:var(--ink);color:#fff;border-color:var(--ink)}
+.nx b{display:block;font:600 16px NSans}.nx span{display:block;margin-top:6px;font:400 13px NSans;opacity:.7}
+.note{margin-top:14px;font:400 12px NSans;color:var(--ink3)}
+.toast{position:fixed;left:50%;bottom:30px;transform:translateX(-50%) translateY(20px);background:var(--ink);color:#fff;font:400 14px NSans;padding:13px 20px;border-radius:10px;opacity:0;transition:all .3s;z-index:50}
+.toast.on{opacity:1;transform:translateX(-50%)}
+@media print{.bar,.toc,.next,.toast{display:none}.wrap{display:block;padding:0}.doc{border:0;box-shadow:none}body{background:#fff}.sec{break-inside:avoid}}
+</style>
+<link rel="stylesheet" href="shell.css">
+<script src="shell.js"></script>
+</head>
+<body>
+<div class="bar">
+  <div class="brand"><img src="mark.png" alt="">测评组网系统</div>
+  <div class="steps"><span><i>01</i>领取身份</span><span><i>02</i>讲需求</span><span><i>03</i>组网</span><b><i>04</i>组网方案</b></div>
+  <div class="acts"><button class="btn" onclick="print()">导出 PDF</button><button class="btn" id="shareB">分享给同事</button><button class="btn pri" id="okB">确认方案，发起对接</button></div>
+</div>
+
+<div class="wrap">
+  <aside class="toc">
+    <div class="t">目录</div>
+    <a href="#s1"><i>01</i>方案概述</a><a href="#s2"><i>02</i>需求对照</a><a href="#s3"><i>03</i>组网架构</a><a href="#s4"><i>04</i>客户需要提供</a>
+    <a href="#s5"><i>05</i>我们提供的服务</a><a href="#s6"><i>06</i>三方分工</a><a href="#s7"><i>07</i>实施计划</a><a href="#s8"><i>08</i>验收标准</a>
+    <a href="#s9"><i>09</i>范围与边界</a><a href="#s10"><i>10</i>风险与应对</a><a href="#s11"><i>11</i>费用构成</a><a href="#s12"><i>12</i>二期建议</a>
+    <div class="meta"><b>方案编号</b><br>PLAN-0712-0001 · v1.0<br><b>状态</b><br>待客户确认<br><b>有效期</b><br>签发后 30 天</div>
+  </aside>
+
+  <main class="doc">
+    <div class="head">
+      <small>NETWORKED SOLUTION · 组网方案</small>
+      <h1>建筑消防管理智能体组网方案</h1>
+      <div class="sub">6 个智能体协同，覆盖 11 项需求中的 10 项；1 项建议列入二期</div>
+      <div class="stamp"><b>已签发</b><span>2026.11.04 · 待确认</span></div>
+      <div class="hmeta">
+        <div><span>需求方</span><b>全球数源中心（广州南沙）有限公司</b></div>
+        <div><span>发起人</span><b>陈思远 · 消防信息化负责人</b></div>
+        <div><span>账号</span><b class="mono">U · 0712</b></div>
+        <div><span>关联需求</span><b class="mono">REQ-0712-0001</b></div>
+        <div><span>偏好</span><b>上线快</b></div>
+      </div>
+    </div>
+
+    <section class="sec" id="s1">
+      <div class="sh"><i>01</i><h2>方案概述</h2></div>
+      <p class="b">在不更换现有消防报警系统和视频监控的前提下，接入 6 个已通过平台测评的智能体，组成一张「感知 → 研判 → 处置 → 留痕」的协作网络：自动识别值班脱岗、通道占用等人为干扰，研判并过滤烟感误报，按时限逐级升级告警，并自动生成巡查记录和月报。视频在园区本地分析，原始画面不出内网。</p>
+      <div class="kpi">
+        <div><span>需求覆盖</span><b>10<em>/ 11</em></b><small>周界安防建议二期</small></div>
+        <div><span>入网智能体</span><b>6<em>个</em></b><small>均已通过平台测评</small></div>
+        <div><span>建议周期</span><b>7<em>周</em></b><small>接入 → 联调 → 试运行 → 验收</small></div>
+        <div><span>硬件改动</span><b>0<em>项</em></b><small>沿用现有报警主机与摄像头</small></div>
+      </div>
+    </section>
+
+    <section class="sec" id="s2">
+      <div class="sh"><i>02</i><h2>需求对照</h2></div>
+      <p class="lead">每一项需求都对应到负责的智能体、交付的能力和验收方式。来源标注「你提出」或「平台补全」。</p>
+      <table>
+        <thead><tr><th>#</th><th>需求</th><th>来源</th><th>负责智能体</th><th>交付能力</th><th>验收方式</th></tr></thead>
+        <tbody id="reqRows"></tbody>
+      </table>
+    </section>
+
+    <section class="sec" id="s3">
+      <div class="sh"><i>03</i><h2>组网架构</h2></div>
+      <p class="lead">数据从客户现有系统流入，经接入、感知、研判、处置四层智能体，最终以告警通知和巡查记录交付到人。连线上标注的是交接的数据。</p>
+      <div class="arch"><svg viewBox="0 0 1000 380" id="arch"></svg>
+        <div class="legend"><span><i style="background:#15171C"></i>数据交接</span><span><i style="background:#0D3BE8"></i>智能体之间协作</span><span><i style="background:#A67C25"></i>交付给人</span></div></div>
+      <table style="margin-top:22px">
+        <thead><tr><th>智能体</th><th>在网络中的角色</th><th>输入</th><th>输出</th><th>部署方式</th><th>测评</th></tr></thead>
+        <tbody id="agRows"></tbody>
+      </table>
+    </section>
+
+    <section class="sec" id="s4">
+      <div class="sh"><i>04</i><h2>客户需要提供的支持</h2></div>
+      <p class="lead">以下是方案落地需要客户侧准备的内容。右侧标注最晚需要在哪个阶段提供，缺项会影响对应需求的交付。</p>
+      <div class="cl" id="needCl"></div>
+    </section>
+
+    <section class="sec" id="s5">
+      <div class="sh"><i>05</i><h2>我们提供的服务</h2></div>
+      <p class="lead">平台、炽光时代项目团队和各智能体项目方，各自承担的服务内容。</p>
+      <div class="sv" id="svc"></div>
+    </section>
+
+    <section class="sec" id="s6">
+      <div class="sh"><i>06</i><h2>三方分工</h2></div>
+      <p class="lead"><span class="r R">主</span> 负责　<span class="r C">配</span> 配合　<span class="r S">知</span> 知会</p>
+      <table class="raci"><thead><tr><th>工作项</th><th style="text-align:center">客户</th><th style="text-align:center">炽光时代</th><th style="text-align:center">智能体项目方</th></tr></thead><tbody id="raci"></tbody></table>
+    </section>
+
+    <section class="sec" id="s7">
+      <div class="sh"><i>07</i><h2>实施计划</h2></div>
+      <p class="lead">按「上线快」偏好排期，共 7 周。具体日期在启动会上确认。</p>
+      <div class="gantt" id="gantt"></div>
+    </section>
+
+    <section class="sec" id="s8">
+      <div class="sh"><i>08</i><h2>验收标准</h2></div>
+      <p class="lead">以下为建议指标，具体数值以启动会双方确认为准。试运行期间按此口径统计。</p>
+      <table><thead><tr><th>#</th><th>验收项</th><th>建议指标</th><th>统计口径</th><th>状态</th></tr></thead><tbody id="acc"></tbody></table>
+    </section>
+
+    <section class="sec" id="s9">
+      <div class="sh"><i>09</i><h2>范围与边界</h2></div>
+      <div class="two">
+        <div class="box in"><h4>本方案的范围</h4><ul>
+          <li>6 个智能体的接入、编排与联调</li><li>与现有报警主机、视频平台的数据对接</li><li>告警升级规则、巡查报表模板的配置</li><li>试运行期间的调优与问题处理</li><li>使用培训与上线后 3 个月运维支持</li></ul></div>
+        <div class="box out"><h4>不在本方案内</h4><ul>
+          <li>摄像头、报警主机等硬件的采购与更换</li><li>消防系统本体及联动逻辑的改造</li><li>消防设施检测、维保等现场服务</li><li>周界安防（列入二期）</li><li>超出上述 11 项需求的新增功能</li></ul></div>
+      </div>
+      <div class="box" style="margin-top:16px"><h4>方案成立的前提</h4><ul>
+        <li>报警主机提供可用的数据接口或通讯协议说明</li><li>视频平台支持标准协议接入（如 GB/T 28181 或 RTSP）</li><li>园区内可提供一台满足要求的本地服务器或边缘设备</li><li>员工视频分析已完成内部告知与授权</li></ul></div>
+    </section>
+
+    <section class="sec" id="s10">
+      <div class="sh"><i>10</i><h2>风险与应对</h2></div>
+      <table><thead><tr><th>风险</th><th>影响</th><th>应对</th><th>责任方</th></tr></thead><tbody id="risk"></tbody></table>
+    </section>
+
+    <section class="sec" id="s11">
+      <div class="sh"><i>11</i><h2>费用构成</h2></div>
+      <p class="lead">费用按以下构成报价，金额由顾问在对接后提供正式报价单。</p>
+      <table class="fee"><thead><tr><th>费用项</th><th>说明</th><th>计费方式</th><th>金额</th></tr></thead><tbody>
+        <tr><td>实施费</td><td>接入、编排、联调、部署、培训</td><td>一次性</td><td>待报价</td></tr>
+        <tr><td>智能体使用费</td><td>6 个智能体的授权或调用</td><td>按年 / 按量，以各项目方报价为准</td><td>待报价</td></tr>
+        <tr><td>运维服务费</td><td>上线后 3 个月内包含；之后按年续约</td><td>按年</td><td>待报价</td></tr>
+        <tr><td>本地部署环境</td><td>服务器或边缘设备，可由客户自备</td><td>客户自备或代采</td><td>待确认</td></tr>
+      </tbody></table>
+    </section>
+
+    <section class="sec" id="s12">
+      <div class="sh"><i>12</i><h2>二期建议</h2></div>
+      <div class="p2">
+        <div><h4>周界安防</h4><p>本次检索中，暂未找到在该能力上测评达标、且能与现有网络协同的智能体，因此不纳入一期。现有摄像头和视觉识别能力可以复用，二期补齐成本较低。</p></div>
+        <div class="opt"><b>建议路径</b>① 平台持续追踪新入驻的智能体，出现达标者时通知你<br>② 发布为「产业赛题」，向全球开发者定向征集方案</div>
+      </div>
+    </section>
+
+    <section class="sec">
+      <div class="sh"><i>→</i><h2>下一步</h2></div>
+      <div class="next">
+        <button class="nx pri" id="ok2"><b>确认方案，发起对接</b><span>顾问约启动会，三方进入实施</span></button>
+        <button class="nx" id="demo"><b>预约演示</b><span>先看 6 个智能体的实际效果</span></button>
+        <button class="nx" onclick="window.UX?UX.goDemandAgain():(location.href='step2-补全.html')"><b>调整需求</b><span>回到需求现场，重新组网</span></button>
+      </div>
+      <div class="note">本方案由平台根据需求文档 REQ-0712-0001 自动生成，测评等级、指标和排期为示例，正式版以平台测评数据和双方确认为准。</div>
+    </section>
+  </main>
+</div>
+<div class="toast" id="toast"></div>
+<script>
+const $ = s => document.querySelector(s), $$ = s => [...document.querySelectorAll(s)];
+const REQ = [
+  ['值班人员脱岗', 'u', '发生了什么', 'WGAI 本地分析', '值班区离岗识别与提醒', '离岗超过设定时长自动告警，推送截图与时间'],
+  ['通道被杂物占用', 'u', '发生了什么', '', '消防通道占用识别', '识别到占用后推送位置与照片，复查消除'],
+  ['烟感误报多', 'u', 'FireMind 智慧消防', '', '误报研判与过滤', '试运行期误报占比较上线前下降，统计口径见 08'],
+  ['夜间无人应答时的告警升级', 'g', 'AI安全卫士', '', '分级告警升级', '无人响应时按设定时限逐级通知，全程留痕'],
+  ['对接现有报警主机', 'g', 'Thinglinks-IoT', '', '报警主机与设备数据接入', '报警事件实时接入，不更换现有硬件'],
+  ['报警后视频二次确认', 'g', 'FireMind 智慧消防', '发生了什么 配合', '报警联动调取画面', '报警发生后自动推送附近摄像头画面'],
+  ['视频数据不出园区', 'g', 'WGAI', '', '本地部署视觉分析', '原始视频不出内网，仅上传事件与截图'],
+  ['检修窗口的临时防护', 'g', 'AI安全卫士', '', '检修影响提示与复核', '检修登记后提示受影响区域与时限，结束后复核'],
+  ['自动生成巡查记录和月报', 'g', '消防Agent', '', '巡查记录与月报', '每月自动生成，可导出留存与报备'],
+  ['预测性维护', 'g', 'FireMind 智慧消防', '', '设施状态预警', '对状态异常的烟感、喷淋提前提示'],
+  ['周界安防', 'g', null, '', '—', '—'],
+];
+$('#reqRows').innerHTML = REQ.map((r, i) => r[2] ? `<tr><td class="no">${String(i + 1).padStart(2, '0')}</td><td>${r[0]}</td><td><span class="src ${r[1]}">${r[1] === 'u' ? '你提出' : '平台补全'}</span></td><td class="ag">${r[2]}${r[3] ? `<small>${r[3]}</small>` : ''}</td><td>${r[4]}</td><td>${r[5]}</td></tr>`
+  : `<tr class="gapr"><td class="no">${String(i + 1).padStart(2, '0')}</td><td>${r[0]}</td><td><span class="src ${r[1]}">平台补全</span></td><td colspan="3"><span class="tag red">暂未覆盖</span>　暂无测评达标的智能体，建议列入二期，见 12</td></tr>`).join('');
+const AG = [
+  ['Thinglinks-IoT', '接入层 · 设备数据接入', '报警主机、物联设备信号', '标准化报警事件', '本地 / 云端', 'L3'],
+  ['WGAI', '接入层 · 本地视觉分析', '摄像头视频流', '视觉事件（不含原始画面）', '本地部署', 'L3'],
+  ['发生了什么', '感知层 · 视频事件识别', '视觉事件', '脱岗、通道占用等事件', '本地 / 云端', 'L4'],
+  ['FireMind 智慧消防', '研判层 · 预测预警与误报研判', '报警事件、视频事件', '风险等级、误报判定、设施预警', '云端', 'L4'],
+  ['AI安全卫士', '处置层 · 闭环处置与告警升级', '风险研判结果', '处置任务、分级通知', '云端', 'L3'],
+  ['消防Agent', '留痕层 · 巡查记录与报备', '全部事件与处置记录', '巡查记录、月报', '云端', 'L3'],
+];
+$('#agRows').innerHTML = AG.map(a => `<tr><td class="ag">${a[0]}</td><td>${a[1]}</td><td>${a[2]}</td><td>${a[3]}</td><td>${a[4]}</td><td><span class="tag green">${a[5]} · 已测评</span></td></tr>`).join('');
+// 架构图
+(function () {
+  const col = [70, 272, 472, 668, 862], L = (x, y, t, s, k = '') => `<g><rect x="${x - 78}" y="${y - 30}" width="156" height="60" rx="8" fill="${k === 'c' ? '#F3F1EC' : k === 'o' ? '#FBF4E3' : '#fff'}" stroke="${k === 'o' ? '#EBDAB0' : k === 'c' ? '#D9D5CC' : '#15171C'}" stroke-width="${k ? 1 : 1.3}"/><text x="${x}" y="${y - 4}" text-anchor="middle" font-family="NSans" font-size="13.5" font-weight="500" fill="#15171C">${t}</text><text x="${x}" y="${y + 15}" text-anchor="middle" font-family="NSans" font-size="11" fill="#959AA3">${s}</text></g>`;
+  const head = (x, t) => `<text x="${x}" y="30" text-anchor="middle" font-family="JBM" font-size="10.5" letter-spacing="2.5" fill="#959AA3">${t}</text>`;
+  const arrow = (x1, y1, x2, y2, c, lab) => { const mx = (x1 + x2) / 2; return `<path d="M${x1} ${y1}C${mx} ${y1} ${mx} ${y2} ${x2 - 6} ${y2}" fill="none" stroke="${c}" stroke-width="1.4"/><path d="M${x2 - 8} ${y2 - 4}l8 4-8 4" fill="none" stroke="${c}" stroke-width="1.4"/>${lab ? `<text x="${mx}" y="${(y1 + y2) / 2 - 6}" text-anchor="middle" font-family="NSans" font-size="10.5" fill="#545A66" paint-order="stroke" stroke="#FBFAF7" stroke-width="4">${lab}</text>` : ''}`; };
+  let g = head(col[0] + 10, '客户现有系统') + head(col[1], '接入层') + head((col[2] + col[3]) / 2, '感知 · 研判 · 处置') + head(col[4], '交付');
+  g += L(col[0] + 10, 120, '报警主机', '烟感 · 喷淋 · 手报', 'c') + L(col[0] + 10, 260, '视频监控', '现有摄像头', 'c');
+  g += L(col[1], 120, 'Thinglinks-IoT', '设备数据接入') + L(col[1], 260, 'WGAI', '本地视觉分析');
+  g += L(col[2], 260, '发生了什么', '视频事件识别') + L(col[2], 120, 'FireMind 智慧消防', '研判 · 预警') + L(col[3], 190, 'AI安全卫士', '闭环处置 · 升级') + L(col[3], 320, '消防Agent', '巡查记录 · 报备');
+  g += L(col[4] + 20, 120, '值班人员 / 主管', '分级通知', 'o') + L(col[4] + 20, 250, '巡查记录 · 月报', '留存与报备', 'o');
+  g += arrow(col[0] + 88, 120, col[1] - 78, 120, '#15171C', '报警信号') + arrow(col[0] + 88, 260, col[1] - 78, 260, '#15171C', '视频流');
+  g += arrow(col[1] + 78, 120, col[2] - 78, 120, '#0D3BE8', '报警事件') + arrow(col[1] + 78, 260, col[2] - 78, 260, '#0D3BE8', '视觉事件');
+  g += `<path d="M${col[2]} 230V150" stroke="#0D3BE8" stroke-width="1.4" fill="none"/><path d="M${col[2] - 4} 158l4-8 4 8" stroke="#0D3BE8" stroke-width="1.4" fill="none"/><text x="${col[2] + 8}" y="196" font-family="NSans" font-size="10.5" fill="#545A66">识别事件</text>`;
+  g += arrow(col[2] + 78, 120, col[3] - 78, 190, '#0D3BE8', '风险研判') + arrow(col[2] + 78, 260, col[3] - 78, 190, '#0D3BE8', '');
+  g += `<path d="M${col[3]} 220V284" stroke="#0D3BE8" stroke-width="1.4"/><path d="M${col[3] - 4} 278l4 8 4-8" stroke="#0D3BE8" stroke-width="1.4" fill="none"/><text x="${col[3] + 8}" y="258" font-family="NSans" font-size="10.5" fill="#545A66">处置记录</text>`;
+  g += arrow(col[3] + 78, 190, col[4] + 20 - 78, 120, '#A67C25', '处置指令') + arrow(col[3] + 78, 320, col[4] + 20 - 78, 250, '#A67C25', '报表');
+  $('#arch').innerHTML = g;
+})();
+// 客户需要提供
+const CL = [
+  ['数据与接口', '阶段 1', [['报警主机型号、通讯协议说明或数据接口', '第 1 周'], ['视频平台接入权限（GB/T 28181 或 RTSP）及摄像头点位清单', '第 1 周'], ['近 3 个月报警与误报记录（用于误报研判调优）', '第 2 周']]],
+  ['部署环境', '阶段 1', [['本地服务器或边缘设备一台（配置由我方提供建议清单）', '第 2 周'], ['内网访问与必要的出网白名单', '第 2 周'], ['机房或弱电间的安装位置与供电', '第 2 周']]],
+  ['人员与组织', '全程', [['项目对接人 1 名（建议即发起人）', '启动会'], ['消防值班负责人，参与规则确认与试运行', '第 3 周'], ['IT 运维人员，配合网络与部署', '第 1 周']]],
+  ['制度与规则', '阶段 2', [['告警升级通讯录与各级响应时限', '第 3 周'], ['值班区域、消防通道的范围标注', '第 3 周'], ['巡查记录与月报的格式要求（如有模板）', '第 4 周']]],
+  ['合规与授权', '阶段 1', [['员工视频行为分析的内部告知与授权', '第 2 周'], ['数据使用范围与保存期限的确认', '第 2 周']]],
+  ['验收参与', '阶段 3', [['试运行期间的问题反馈', '第 5–6 周'], ['按 08 验收标准组织验收并签字', '第 7 周']]],
+];
+$('#needCl').innerHTML = CL.map(([h, s, li]) => `<div class="ci"><h4>${h}<span>${s}</span></h4><ul>${li.map(([t, w]) => `<li><i></i><span>${t}</span><em>${w}</em></li>`).join('')}</ul></div>`).join('');
+const SV = [
+  ['测评组网平台', '方案生成与持续匹配', ['需求文档与组网方案生成', '智能体测评报告与等级查询', '组网运行监控与覆盖率看板', '新智能体入驻后的二期匹配提醒']],
+  ['炽光时代项目团队', '一对一顾问 + 实施交付', ['专属顾问，全程对接', '启动会、需求确认与排期', '多方智能体集成与联调', '部署实施、培训与验收组织', '上线后 3 个月运维支持']],
+  ['智能体项目方（6 家）', '各自能力的交付与保障', ['智能体授权或调用服务', '接口文档与技术支持', '按验收标准完成能力调优', '版本升级与故障响应']],
+];
+$('#svc').innerHTML = SV.map(([h, s, li]) => `<div class="ci"><h4>${h}<small>${s}</small></h4><ul>${li.map((t, i) => `<li><i>${String(i + 1).padStart(2, '0')}</i><span>${t}</span></li>`).join('')}</ul></div>`).join('');
+const RA = [['需求确认与启动会', 'C', 'R', 'S'], ['数据接口与接入权限', 'R', 'C', 'C'], ['本地部署环境', 'R', 'C', 'S'], ['智能体集成与联调', 'C', 'R', 'C'], ['各智能体能力调优', 'S', 'C', 'R'], ['告警规则与报表配置', 'C', 'R', 'C'], ['试运行与问题反馈', 'R', 'C', 'C'], ['验收', 'R', 'R', 'C'], ['上线后运维', 'S', 'R', 'C']];
+const RT = { R: '主', C: '配', S: '知' };
+$('#raci').innerHTML = RA.map(([t, ...v]) => `<tr><td>${t}</td>${v.map(x => `<td class="c"><span class="r ${x}">${RT[x]}</span></td>`).join('')}</tr>`).join('');
+const GA = [['启动与准备', '启动会 · 资料提供', 0, 1, ''], ['数据接入', '报警主机 · 视频平台', .5, 2, 'b'], ['部署与集成', '本地环境 · 6 个智能体', 1.5, 2, 'b'], ['规则配置与联调', '告警升级 · 报表', 3, 1.5, ''], ['试运行', '调优 · 问题反馈', 4.5, 2, 'g'], ['验收上线', '按 08 验收', 6.5, .5, 'gr2']];
+$('#gantt').innerHTML = `<div class="gr"><div class="l" style="font:500 10.5px JBM;letter-spacing:.16em;color:var(--ink3)">阶段</div><div class="tl">${Array.from({ length: 8 }, (_, i) => `<span>${i < 7 ? 'W' + (i + 1) : ''}</span>`).join('')}</div></div>` +
+  GA.map(([n, s, a, d, c]) => `<div class="gr"><div class="l">${n}<small>${s}</small></div><div class="tl">${Array.from({ length: 8 }, () => '<span></span>').join('')}<div class="bar2 ${c}" style="left:${a / 8 * 100}%;width:${d / 8 * 100}%">${d >= 1 ? d + ' 周' : ''}</div>${n === '验收上线' ? `<div class="ms" style="left:calc(${7 / 8 * 100}% - 7px)"></div>` : ''}</div></div>`).join('');
+const AC = [['值班脱岗识别', '离岗超过设定时长后 1 分钟内告警', '试运行期抽检人工比对'], ['通道占用识别', '占用持续超过设定时长后告警，漏报可追溯', '试运行期抽检'], ['烟感误报研判', '误报占比较上线前明显下降', '对比上线前 3 个月记录'], ['告警升级', '无人响应时按设定时限 100% 逐级通知', '系统日志'], ['数据合规', '原始视频 0 次出内网', '网络出口审计'], ['巡查月报', '每月按时自动生成', '系统记录']];
+$('#acc').innerHTML = AC.map(([a, b, c], i) => `<tr><td class="no">${String(i + 1).padStart(2, '0')}</td><td>${a}</td><td>${b}</td><td>${c}</td><td><span class="tbd">待双方确认</span></td></tr>`).join('');
+const RK = [['报警主机协议不开放或型号过旧', '设备数据接不进来，影响需求 05', '已纳入 Thinglinks-IoT；必要时加装协议转换网关', '炽光时代 · 客户'], ['摄像头点位不覆盖值班区或通道', '识别盲区', '启动后 1 周内完成点位核查，给出补点建议', '炽光时代'], ['识别初期误报偏高', '值班人员被打扰', '试运行 2 周内按现场调阈值，设灰度期', '项目方'], ['员工对视频分析有顾虑', '推进受阻', '本地分析、只传事件；提前完成告知与授权', '客户'], ['多家项目方协同效率', '联调延期', '炽光时代统一排期，每周例会', '炽光时代']];
+$('#risk').innerHTML = RK.map(r => `<tr><td>${r[0]}</td><td>${r[1]}</td><td>${r[2]}</td><td style="white-space:nowrap">${r[3]}</td></tr>`).join('');
+// 目录高亮
+const secs = $$('.sec[id]'), links = $$('.toc a');
+addEventListener('scroll', () => { let cur = secs[0].id; secs.forEach(s => { if (s.getBoundingClientRect().top < 160) cur = s.id; }); links.forEach(a => a.classList.toggle('on', a.getAttribute('href') === '#' + cur)); }, { passive: true });
+dispatchEvent(new Event('scroll'));
+const toast = m => { const t = $('#toast'); t.textContent = m; t.classList.add('on'); setTimeout(() => t.classList.remove('on'), 2600); };
+['#okB', '#ok2'].forEach(s => $(s).onclick = () => toast('已提交确认。顾问将联系你约启动会，6 家项目方已同步收到方案（演示）'));
+$('#demo').onclick = () => toast('已发起预约演示（演示）');
+$('#shareB').onclick = () => { navigator.clipboard?.writeText(location.href); toast('方案链接已复制，同事可查看并评论（演示）'); };
+document.body.classList.add('ux-unified');
+
+(function applyPref(){
+  let run={}, profile={};
+  try { run = JSON.parse(sessionStorage.getItem('si_run')||'{}'); } catch(e){}
+  try { profile = JSON.parse(sessionStorage.getItem('si_profile')||'{}'); } catch(e){}
+  const prefLabel = run.preferenceLabel || ({fast:'上线快',cheap:'成本低',local:'本地部署'}[run.preference]||'上线快');
+  const prefB = document.querySelector('.hmeta div:last-child b');
+  if (prefB) prefB.textContent = prefLabel;
+  const lead = document.querySelector('#s7 .lead');
+  if (lead) lead.textContent = `按「${prefLabel}」偏好排期，共 7 周。具体日期在启动会上确认。`;
+  if (profile.name) {
+    const hm = document.querySelectorAll('.hmeta div');
+    if (hm[0] && profile.org) hm[0].querySelector('b').textContent = profile.org;
+    if (hm[1]) hm[1].querySelector('b').textContent = (profile.name||'陈思远') + ' · ' + (profile.role||'消防信息化负责人');
+    if (hm[2] && profile.sid) hm[2].querySelector('b').textContent = profile.sid;
+  }
+  if (run.coverage != null) {
+    const sub = document.querySelector('.head .sub');
+    if (sub) sub.textContent = `6 个智能体协同，覆盖 11 项需求中的 ${run.coverage} 项；1 项建议列入二期`;
+  }
+})();
+
+window.UX && UX.init(4, 'light');
+</script>
+</body>
+</html>

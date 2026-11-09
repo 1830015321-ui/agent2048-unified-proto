@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>测评组网系统 · 融合原型</title>
+<link rel="stylesheet" href="shell.css">
+<style>
+html,body{margin:0;min-height:100%;background:#06070A;color:#ECEAE4;
+  font-family:NSans,"PingFang SC","Microsoft YaHei",system-ui,sans-serif}
+main{max-width:820px;margin:0 auto;padding:72px 28px 80px}
+.brand{display:flex;align-items:center;gap:12px;font:600 18px NSerif,"PingFang SC",serif;letter-spacing:.12em}
+.brand img{height:22px;filter:brightness(1.35)}
+.brand small{font:500 10.5px JBM,monospace;letter-spacing:.26em;color:rgba(236,234,228,.4)}
+h1{margin:36px 0 10px;font:600 40px/1.3 NSerif,"PingFang SC",serif;letter-spacing:.1em}
+.lead{margin:0 0 36px;font:400 16px/1.7 NSans,"PingFang SC",sans-serif;color:rgba(236,234,228,.62)}
+.cta{
+  display:inline-flex;align-items:center;gap:12px;text-decoration:none;
+  border:0;background:linear-gradient(160deg,#1543F2,#0A2AB8);color:#fff;
+  font:500 17px NSans,"PingFang SC",sans-serif;padding:16px 26px;border-radius:12px;
+  box-shadow:0 10px 40px rgba(13,59,232,.45);
+}
+.cta:hover{filter:brightness(1.06)}
+.row{display:flex;flex-wrap:wrap;gap:12px;margin-top:18px}
+.row a{display:inline-flex;align-items:center;padding:12px 16px;border-radius:10px;text-decoration:none;color:#ECEAE4;
+  border:1px solid rgba(255,255,255,.14);background:rgba(14,17,26,.7);font:500 13.5px NSans}
+.row a:hover{border-color:rgba(111,147,255,.55)}
+.flow{margin-top:48px;display:grid;gap:12px}
+.flow a{
+  display:block;padding:16px 18px;border-radius:12px;text-decoration:none;color:#ECEAE4;
+  border:1px solid rgba(255,255,255,.12);background:rgba(14,17,26,.7);
+}
+.flow a b{display:block;font:500 15px NSans,"PingFang SC",sans-serif}
+.flow a span{display:block;margin-top:6px;font:400 13px NSans,"PingFang SC",sans-serif;color:rgba(236,234,228,.5)}
+.flow a:hover{border-color:rgba(111,147,255,.55)}
+.note{margin-top:40px;font:400 12.5px/1.7 NSans,"PingFang SC",sans-serif;color:rgba(236,234,228,.38)}
+</style>
+</head>
+<body>
+<main>
+  <div class="brand"><img src="mark.png" alt="">测评组网系统<small>SKILL INDEX</small></div>
+  <h1>融合原型</h1>
+  <p class="lead">登录/注册 → 工作台/提需求 → 多任务解析与 DAG → 确认组网 → 成功/部分/失败三态 → 方案。<br>
+  城运样例保留；教育样例（2 任务 · 5 视角）对齐高雨晴清单附录。Prototype 模拟，未接真实后端。</p>
+  <a class="cta" href="step1-领证.html">从完整链路开始体验 →</a>
+  <p class="lead" style="margin-top:14px;margin-bottom:8px;font-size:13.5px">全链路入口：打开 <code>step1-领证.html</code>（无 <code>?demo</code>）即从注册开场；刷新也从头。下方带 <code>?demo=</code> 的是演示快捷，刷新会停在对应幕，要点页脚「重新开始」才回全链路。</p>
+  <div class="row">
+    <a href="step1-领证.html?demo=workbench">工作台</a>
+    <a href="step1-领证.html?demo=edu">教育案例</a>
+    <a href="step1-领证.html?demo=edu-match">教育·组网成功</a>
+    <a href="step1-领证.html?demo=edu-partial">教育·部分匹配</a>
+    <a href="step1-领证.html?demo=edu-fail">教育·组网失败</a>
+    <a href="step1-领证.html?demo=match&amp;t=39">城运·匹配结果</a>
+  </div>
+  <div class="flow">
+    <a href="step1-领证.html"><b>01 · 注册 / 登录</b><span>新用户注册进需求；已有用户登录进历史工作台</span></a>
+    <a href="step1-领证.html?demo=edu"><b>02 · 需求解析</b><span>对话区 + 多任务卡 + 使用对象切换 + edges DAG（反馈边虚线）</span></a>
+    <a href="step1-领证.html?demo=edu-partial"><b>03 · 组网过程 / 效果</b><span>品牌文案轮播 · 成功 / 部分匹配 / 失败</span></a>
+    <a href="step1-领证.html?demo=scheme"><b>04 · 方案</b><span>城运正式组网方案（保留）</span></a>
+  </div>
+  <p class="note">本地静态服务端口 <b>9876</b>：<br><code>cd 本目录 && python3 -m http.server 9876</code> → http://127.0.0.1:9876/</p>
+</main>
+</body>
+</html>

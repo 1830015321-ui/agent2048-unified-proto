@@ -1,0 +1,329 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<title>第二步 · 需求现场 · Demo v2</title>
+<style>
+@font-face{font-family:"NR";src:url(fonts/newsreader-400.woff2) format("woff2");font-weight:400}
+@font-face{font-family:"NSerif";src:url(fonts/noto-serif-sc-400.woff2) format("woff2");font-weight:400}
+@font-face{font-family:"NSerif";src:url(fonts/noto-serif-sc-600.woff2) format("woff2");font-weight:600}
+@font-face{font-family:"NSans";src:url(fonts/NotoSansSC-var.ttf) format("truetype");font-weight:100 900}
+@font-face{font-family:"JBM";src:url(fonts/JetBrainsMono-var.ttf) format("truetype");font-weight:100 800}
+:root{--bg:#F3F1EC;--sheet:#FBFAF7;--ink:#15171C;--ink2:#5B606B;--ink3:#9A9EA6;--rule:#E3E0D8;--line:#2A2D35;
+  --blue:#0D3BE8;--blue-t:#EEF2FF;--gold:#A67C25;--gold-hi:#D4A642;--gold-t:#FBF4E3;--gold-r:#EBDAB0}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;background:#D9D6CF;overflow:hidden}
+body{font-family:NSans,"PingFang SC","Microsoft YaHei",system-ui,sans-serif;color:var(--ink);-webkit-font-smoothing:antialiased}
+#app{position:absolute;left:0;top:0;width:1440px;height:900px;background:var(--bg);transform-origin:0 0;overflow:hidden}
+button{font:inherit;cursor:pointer}
+.bar{position:absolute;left:0;right:0;top:0;height:64px;display:flex;align-items:center;justify-content:space-between;padding:0 32px;z-index:20;border-bottom:1px solid var(--rule)}
+.brand{display:flex;align-items:center;gap:12px;font:600 16px NSerif;letter-spacing:.1em}.brand img{height:20px}
+.steps{display:flex;gap:28px;font:400 13px NSans;color:var(--ink3)}
+.steps i{font:500 11px JBM;font-style:normal;margin-right:6px}.steps b{color:var(--ink);font-weight:500;position:relative}
+.steps b::after{content:"";position:absolute;left:0;right:0;bottom:-22px;height:2px;background:var(--ink)}
+.me{display:flex;align-items:center;gap:10px;padding:5px 14px 5px 5px;border:1px solid var(--rule);border-radius:999px;background:var(--sheet)}
+.si{display:inline-grid;place-items:center;width:28px;height:33px;background:linear-gradient(160deg,#1543F2,#071B7A);color:#fff;font:400 16px NR;border-radius:3px}
+.me b{display:block;font:500 13px NSans}.me span{display:block;font:500 10px JBM;letter-spacing:.14em;color:var(--ink3)}
+
+/* ── A 选现场 ── */
+#pick{position:absolute;inset:64px 0 0;transition:opacity .5s,transform .7s cubic-bezier(.2,.8,.2,1)}
+#pick.gone{opacity:0;transform:scale(.98);pointer-events:none}
+.ph{position:absolute;left:0;right:0;top:110px;text-align:center}
+.ph small{font:500 11.5px JBM;letter-spacing:.38em;color:var(--ink3)}
+.ph h1{margin:14px 0 0;font:400 42px/1.3 NSerif;letter-spacing:.06em}
+.ph p{margin:12px 0 0;font:400 16px NSans;color:var(--ink2)}
+.cards{position:absolute;left:50%;top:330px;width:1120px;margin-left:-560px;display:grid;grid-template-columns:repeat(4,1fr);gap:18px}
+.scard{position:relative;text-align:left;background:var(--sheet);border:1px solid var(--rule);border-radius:16px;padding:0 0 18px;overflow:hidden;transition:all .3s cubic-bezier(.2,.8,.2,1)}
+.scard:hover{transform:translateY(-4px);box-shadow:0 24px 50px -24px rgba(30,35,60,.35);border-color:var(--ink3)}
+.scard svg{display:block;width:100%;height:170px;background:#F6F4EF;border-bottom:1px solid var(--rule)}
+.scard b{display:block;margin:16px 20px 0;font:500 18px NSans}
+.scard span{display:block;margin:5px 20px 0;font:400 13px NSans;color:var(--ink3)}
+.scard .rec{position:absolute;left:14px;top:14px;font:500 11px NSans;color:var(--blue);background:#fff;border:1px solid #D6DEFF;padding:3px 9px;border-radius:999px}
+.scard.dim{opacity:.55}
+.pnote{position:absolute;left:0;right:0;top:640px;text-align:center;font:400 13px NSans;color:var(--ink3)}
+.pnote a{color:var(--ink2);text-decoration:underline;text-underline-offset:3px;cursor:pointer}
+
+/* ── B 需求现场 ── */
+#site{position:absolute;inset:64px 0 0;opacity:0;pointer-events:none;transition:opacity .6s .15s}
+#site.on{opacity:1;pointer-events:auto}
+.sh{position:absolute;left:44px;top:28px;right:520px;display:flex;justify-content:space-between;align-items:flex-end}
+.sh h2{margin:0;font:400 28px NSerif;letter-spacing:.06em}
+.sh h2 em{font-style:normal;color:var(--gold)}
+.sh p{margin:6px 0 0;font:400 14px NSans;color:var(--ink2)}
+.sh .ct{font:500 12px JBM;letter-spacing:.2em;color:var(--ink3);text-align:right}
+.sh .ct b{display:block;font:400 34px NR;color:var(--ink);letter-spacing:0}
+.stage{position:absolute;left:36px;top:46px;width:880px;height:640px}
+.stage svg{position:absolute;inset:0;width:100%;height:100%}
+.stage .scan{position:absolute;top:0;bottom:0;width:3px;left:-10px;background:linear-gradient(transparent,var(--gold-hi),transparent);box-shadow:0 0 30px 8px rgba(212,166,66,.35);opacity:0}
+/* 热点 */
+.hot{position:absolute;width:30px;height:30px;margin:-15px 0 0 -15px;border-radius:50%;border:0;background:none;padding:0}
+.hot::before{content:"";position:absolute;inset:8px;border-radius:50%;background:var(--blue);box-shadow:0 0 0 3px rgba(13,59,232,.15)}
+.hot::after{content:"";position:absolute;inset:0;border-radius:50%;border:1.5px solid rgba(13,59,232,.45);animation:ping 2.2s ease-out infinite}
+@keyframes ping{0%{transform:scale(.5);opacity:1}100%{transform:scale(1.5);opacity:0}}
+.hot .hl{position:absolute;left:24px;top:50%;transform:translateY(-50%);white-space:nowrap;font:500 12.5px NSans;color:var(--ink);background:rgba(251,250,247,.92);border:1px solid var(--rule);padding:3px 9px;border-radius:6px;pointer-events:none;transition:all .2s}
+.hot.left .hl{left:auto;right:24px}
+.hot:hover .hl{border-color:var(--ink)}
+.hot.done::before{background:var(--ink);inset:6px;box-shadow:0 0 0 4px rgba(21,23,28,.12)}
+.hot.done::after{animation:none;border-color:transparent}
+.hot.done .hl{background:var(--ink);color:#fff;border-color:var(--ink)}
+.hot .ck{position:absolute;inset:0;display:grid;place-items:center;color:#fff;font:600 11px NSans;opacity:0;z-index:1}
+.hot.done .ck{opacity:1}
+.hot.gold{opacity:0;transform:scale(.3);transition:opacity .4s,transform .6s cubic-bezier(.2,1.6,.4,1)}
+.hot.gold.on{opacity:1;transform:none}
+.hot.gold::before{background:var(--gold-hi);box-shadow:0 0 0 3px rgba(212,166,66,.25),0 0 22px 6px rgba(212,166,66,.45)}
+.hot.gold::after{border-color:rgba(212,166,66,.7)}
+.hot.gold .hl{background:var(--gold-t);border-color:var(--gold-r);color:#6E5215}
+.hot.gold.ok::before{background:var(--gold)}.hot.gold.ok::after{animation:none;border-color:transparent}.hot.gold.ok .hl{background:var(--gold);color:#fff;border-color:var(--gold)}
+.hot.gold.no{opacity:.35}
+/* 弹层 */
+#pop{position:absolute;z-index:30;width:300px;background:#fff;border:1px solid var(--rule);border-radius:14px;box-shadow:0 30px 60px -20px rgba(30,35,60,.35);padding:16px 18px;display:none}
+#pop.on{display:block;animation:popin .3s cubic-bezier(.2,1.2,.4,1)}
+@keyframes popin{0%{opacity:0;transform:translateY(6px) scale(.97)}}
+#pop small{font:500 10.5px JBM;letter-spacing:.22em;color:var(--ink3)}
+#pop h4{margin:6px 0 12px;font:500 17px NSans}
+#pop .ops{display:flex;flex-direction:column;gap:7px}
+#pop .op{display:flex;align-items:center;gap:10px;text-align:left;border:1px solid var(--rule);background:#fff;font:400 14px NSans;padding:9px 12px;border-radius:9px;transition:all .15s}
+#pop .op i{width:16px;height:16px;border-radius:4px;border:1.5px solid var(--ink3);flex:none;position:relative}
+#pop .op.sel{border-color:var(--ink);background:#FAFAF8}#pop .op.sel i{background:var(--ink);border-color:var(--ink)}
+#pop .op.sel i::after{content:"";position:absolute;left:4.5px;top:1.5px;width:4px;height:8px;border:solid #fff;border-width:0 1.8px 1.8px 0;transform:rotate(45deg)}
+#pop .row{display:flex;justify-content:flex-end;margin-top:12px}
+#pop .row button{border:0;background:var(--ink);color:#fff;font:500 13px NSans;padding:8px 14px;border-radius:8px}
+#pop.goldp{border-color:var(--gold-r);background:linear-gradient(#FFFDF8,#FFF)}
+#pop.goldp small{color:var(--gold)}
+#pop p{margin:0 0 10px;font:400 13.5px/1.7 NSans;color:var(--ink2)}
+.bas{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px}
+.bas span{font:400 11.5px NSans;color:var(--ink2);background:var(--gold-t);border:1px solid var(--gold-r);padding:2px 8px;border-radius:4px}
+.bas span b{font:500 9.5px JBM;letter-spacing:.14em;color:var(--gold);margin-right:5px}
+.peer{font:400 12.5px NSans;color:var(--ink)}.peer em{font:500 15px JBM;font-style:normal;color:var(--gold)}
+#pop .row.two{justify-content:space-between}
+#pop .row .nob{background:#fff;color:var(--ink2);border:1px solid var(--rule)}
+#pop .row .yesg{background:var(--gold)}
+/* 右侧需求文档 */
+.tray{position:absolute;right:28px;top:24px;bottom:24px;width:470px;background:var(--sheet);border:1px solid var(--rule);border-radius:16px;box-shadow:0 1px 0 #fff inset,0 30px 60px -40px rgba(30,35,60,.35);display:flex;flex-direction:column}
+.th{padding:22px 26px 14px;border-bottom:1.5px solid var(--ink);display:flex;justify-content:space-between;align-items:flex-start}
+.th h3{margin:0;font:600 21px NSerif;letter-spacing:.12em}
+.th h3 small{display:block;margin-top:6px;font:500 10px JBM;letter-spacing:.22em;color:var(--ink3)}
+.th .sg{text-align:right;font:500 12px NSans}.th .sg span{display:block;margin-top:3px;font:500 9.5px JBM;letter-spacing:.14em;color:var(--ink3)}
+.tb{flex:1;overflow:auto;padding:6px 26px 20px;scrollbar-width:thin}
+.tsec{margin-top:16px}
+.tsec h5{margin:0 0 8px;font:500 10.5px JBM;letter-spacing:.24em;color:var(--ink3);display:flex;justify-content:space-between}
+.sum{font:400 14.5px/1.8 NSans;color:var(--ink);min-height:52px}
+.sum .ph2{color:var(--ink3)}
+.need{display:flex;align-items:flex-start;gap:10px;padding:9px 0;border-bottom:1px solid var(--rule);animation:fly .5s cubic-bezier(.2,1.2,.4,1)}
+@keyframes fly{0%{opacity:0;transform:translateX(-16px)}}
+.need i{font:500 10px JBM;font-style:normal;letter-spacing:.12em;color:var(--blue);background:var(--blue-t);padding:2px 6px;border-radius:4px;white-space:nowrap;margin-top:2px}
+.need span{flex:1;font:400 14px NSans}
+.need button{border:0;background:none;color:var(--ink3);font-size:15px;padding:0 2px}
+.empty{font:400 13px NSans;color:var(--ink3);padding:6px 0}
+.more{display:flex;gap:8px;align-items:center;margin-top:10px;border:1px dashed var(--rule);border-radius:9px;padding:8px 10px}
+.more input{flex:1;border:0;outline:0;background:none;font:400 13.5px NSans;color:var(--ink)}
+.more input::placeholder{color:#B6B9C0}
+.gneed{border-color:var(--gold-r)}.gneed i{color:var(--gold);background:var(--gold-t)}
+.gneed.no span{text-decoration:line-through;color:var(--ink3)}
+.tf{padding:16px 26px;border-top:1px solid var(--rule)}
+.tf .hint{font:400 12.5px NSans;color:var(--ink3);margin-bottom:10px}
+.cta{width:100%;border:0;background:var(--ink);color:#fff;font:500 15px NSans;padding:14px 0;border-radius:11px;transition:all .3s}
+.cta:disabled{opacity:.25;cursor:default}
+.cta.gold{background:linear-gradient(180deg,#2A57FF,#0D3BE8);box-shadow:0 12px 30px -12px rgba(13,59,232,.7)}
+.demo{position:absolute;left:24px;bottom:10px;font:400 11px NSans;color:var(--ink3);z-index:11}.demo a{color:var(--ink2);margin-left:8px}
+</style>
+<link rel="stylesheet" href="shell.css">
+<script src="shell.js"></script>
+</head>
+<body>
+<div id="app">
+  <div class="bar">
+    <div class="brand"><img src="mark.png" alt="">测评组网系统</div>
+    <div class="steps"><span><i>01</i>领取身份</span><b><i>02</i>讲需求</b><span><i>03</i>组网方案</span></div>
+    <div class="me"><span class="si">Si</span><div><b>陈思远</b><span>SI · 0712 · 0004</span></div></div>
+  </div>
+
+  <!-- A 选现场 -->
+  <div id="pick">
+    <div class="ph"><small>STEP 02 · 讲需求</small><h1>陈思远，你的问题出在哪个现场？</h1><p>不用写长篇需求。选一个现场，在里面点出问题就行。</p></div>
+    <div class="cards" id="cards"></div>
+    <div class="pnote">都不像？<a id="free">直接用一句话说</a></div>
+  </div>
+
+  <!-- B 需求现场 -->
+  <div id="site">
+    <div class="sh"><div><h2 id="sTitle">哪里让你头疼？<em>点出来</em></h2><p id="sSub">点亮的位置越多，后面的组网方案越准。</p></div><div class="ct">已点出<b id="nUser">0</b></div></div>
+    <div class="stage" id="stage">
+      <svg viewBox="0 0 880 640" id="draw"></svg>
+      <div class="scan" id="scan"></div>
+    </div>
+    <div id="pop"></div>
+    <div class="tray">
+      <div class="th"><h3>需求文档<small>REQ · 0712-0001 · 实时生成</small></h3><div class="sg">发起人 · 陈思远<span>SI · 0712 · 0004</span></div></div>
+      <div class="tb" id="tb">
+        <div class="tsec"><h5>需求概述</h5><div class="sum" id="sum"><span class="ph2">在左边的现场里点出问题，这里会自动写成需求。</span></div></div>
+        <div class="tsec"><h5><span>你点出的</span><span id="c1">0</span></h5><div id="mine"><div class="empty">还没有</div></div>
+          <div class="more"><input id="extra" placeholder="还有别的？一句话补充（可选）"></div></div>
+        <div class="tsec" id="gsec" style="display:none"><h5><span style="color:var(--gold)">你没点到的，我们发现了</span><span id="c2">0 / 8</span></h5><div id="found"></div></div>
+      </div>
+      <div class="tf"><div class="hint" id="hint">至少点出一处，我们帮你看看还漏了什么</div><button class="cta" id="cta" disabled>就这些，帮我看看还漏了什么</button></div>
+    </div>
+  </div>
+  <div class="demo">全链路 · 完善信息<a href="step1-领证.html" data-restart="1">↻ 重新开始</a><a href="index.html">融合入口</a></div>
+</div>
+<script>
+const $ = s => document.querySelector(s), $$ = s => [...document.querySelectorAll(s)], wait = ms => new Promise(r => setTimeout(r, ms));
+
+window.UX && UX.init(2, 'light');
+(function(){
+  const p = window.UX && UX.profile();
+  if (p && p.name) {
+    const h = document.querySelector('#pick .ph h1');
+    if (h) h.textContent = p.name + '，你的问题出在哪个现场？';
+    const sg = document.querySelector('.th .sg');
+    if (sg) sg.innerHTML = '发起人 · ' + p.name + '<span>' + (p.sid||'') + '</span>';
+  }
+  if (new URLSearchParams(location.search).get('from') === 'bridge') {
+    // 深链兼容：轻量入场（主路径已改为 step1 同页连贯）
+    const veil = document.createElement('div');
+    veil.style.cssText = 'position:absolute;inset:0;z-index:80;background:#06070A;opacity:1;transition:opacity .7s;pointer-events:none';
+    $('#app').appendChild(veil);
+    requestAnimationFrame(() => { requestAnimationFrame(() => { veil.style.opacity = '0'; }); });
+    setTimeout(() => veil.remove(), 800);
+  }
+})();
+// ── 现场卡片（线稿缩略图）──
+const MINI = {
+  fire: '<g fill="none" stroke="#2A2D35" stroke-width="1.2"><path d="M60 140h160V60l-30-22H90L60 60z"/><path d="M60 100h160M140 60v80"/><circle cx="100" cy="72" r="4"/><circle cx="180" cy="72" r="4"/><path d="M196 140v-22h18v22"/></g><circle cx="100" cy="120" r="5" fill="#0D3BE8"/><circle cx="205" cy="128" r="5" fill="#0D3BE8"/>',
+  plant: '<g fill="none" stroke="#2A2D35" stroke-width="1.2"><path d="M40 140h200V96l-40 20V96l-40 20V96l-40 20V70H60v70z"/><path d="M70 70V40h14v30"/><circle cx="120" cy="128" r="8"/><circle cx="170" cy="128" r="8"/><path d="M110 128h70"/></g><circle cx="170" cy="128" r="5" fill="#0D3BE8"/>',
+  campus: '<g fill="none" stroke="#2A2D35" stroke-width="1.2"><path d="M30 140h220"/><path d="M50 140V80h50v60M120 140V60h60v80M200 140V95h35v45"/><path d="M60 95h30M60 115h30M130 80h40M130 100h40M130 120h40"/></g><circle cx="150" cy="100" r="5" fill="#0D3BE8"/>',
+  lab: '<g fill="none" stroke="#2A2D35" stroke-width="1.2"><path d="M50 140h180"/><path d="M70 140V96h60v44M150 140V80h60v60"/><path d="M90 96V70h6v26M104 96V62h6v34M168 80V56l10-10 10 10v24"/></g><circle cx="180" cy="110" r="5" fill="#0D3BE8"/>',
+};
+const SC = [['fire', '建筑消防', '值守 · 通道 · 误报 · 检修', 1], ['plant', '工厂产线', '设备 · 巡检 · 质检', 0], ['campus', '园区运营', '安防 · 能耗 · 访客', 0], ['lab', '实验室', '仪器数据 · 报告', 0]];
+$('#cards').innerHTML = SC.map(([k, n, s, rec]) => `<button class="scard ${rec ? '' : 'dim'}" data-k="${k}">${rec ? '<span class="rec">根据你的身份推荐</span>' : ''}<svg viewBox="0 0 280 170">${MINI[k]}</svg><b>${n}</b><span>${s}</span></button>`).join('');
+$('#cards').onclick = e => { const c = e.target.closest('.scard'); if (!c) return; if (c.dataset.k !== 'fire') { c.querySelector('span:last-child').textContent = '演示版暂只开放「建筑消防」'; return; } enterSite(); };
+$('#free').onclick = () => { $('#free').textContent = '演示版：请先体验「建筑消防」现场'; };
+
+// ── 建筑剖面线稿 ──
+const L = '#2A2D35', T = '#9A9EA6';
+const txt = (x, y, s, sz = 12, c = T, a = 'start') => `<text x="${x}" y="${y}" font-family="NSans" font-size="${sz}" fill="${c}" text-anchor="${a}" letter-spacing="1">${s}</text>`;
+const smoke = (x, y) => `<g stroke="${L}" stroke-width="1" fill="#fff"><path d="M${x - 9} ${y}h18"/><circle cx="${x}" cy="${y + 5}" r="5"/><circle cx="${x}" cy="${y + 5}" r="1.4" fill="${L}"/></g>`;
+const cam = (x, y, flip) => `<g stroke="${L}" stroke-width="1" fill="#fff" transform="translate(${x} ${y}) scale(${flip ? -1 : 1} 1)"><path d="M0 0v6h4"/><path d="M4 2l16 -2v10l-16 -2z"/></g>`;
+const door = (x, y, w, h, dir = 1) => `<g stroke="${L}" stroke-width="1" fill="none"><path d="M${x} ${y}v-${h}"/><path d="M${x} ${y - h}A${h} ${h} 0 0 ${dir > 0 ? 1 : 0} ${x + dir * h * .7} ${y - h * .3}" stroke-dasharray="2 3" stroke="${T}"/><path d="M${x} ${y - h}l${dir * h * .62} ${h * .55}" stroke-width="1.6"/></g>`;
+function drawSite() {
+  let g = '';
+  // 地面与院子
+  g += `<path d="M20 560H860" stroke="${L}" stroke-width="1.6"/><path d="M20 566H860" stroke="${T}" stroke-dasharray="1 5"/>`;
+  for (let x = 30; x < 860; x += 22) g += `<path d="M${x} 566l-8 12" stroke="#CFCBC2"/>`;
+  // 建筑外轮廓与楼板
+  g += `<g fill="none" stroke="${L}" stroke-width="2"><path d="M90 560V128H790V560"/></g>`;
+  g += `<path d="M78 128H802" stroke="${L}" stroke-width="3"/>`;
+  [270, 415].forEach(y => g += `<path d="M90 ${y}H790" stroke="${L}" stroke-width="2.4"/>`);
+  // 楼梯间
+  g += `<g stroke="${L}" stroke-width="1" fill="none"><path d="M400 128V560M482 128V560" stroke-width="1.6"/>`;
+  [[560, 415], [415, 270], [270, 128]].forEach(([y0, y1]) => { let s = ''; for (let k = 0; k < 8; k++) { const y = y0 - k * (y0 - y1) / 8, x = 408 + k * 8.5; s += `M${x} ${y}h8.5v-${(y0 - y1) / 8}`; } g += `<path d="${s}"/>`; });
+  g += `</g>`;
+  // 一层隔墙
+  g += `<g stroke="${L}" stroke-width="1.4"><path d="M250 415V560M320 415V560"/><path d="M640 415V560"/></g>`;
+  // 二层、三层隔墙
+  g += `<g stroke="${L}" stroke-width="1.4"><path d="M250 270V415"/><path d="M270 128V270M340 128V270M640 128V270"/></g>`;
+  // 门
+  g += door(250, 560, 34, 34, 1) + door(320, 560, 30, 30, -1) + door(400, 560, 32, 32, -1) + door(400, 415, 32, 32, -1) + door(482, 415, 32, 32, 1) + door(400, 270, 32, 32, -1);
+  // 出口
+  g += `<g stroke="${L}" stroke-width="1.6" fill="none"><path d="M790 560V500h-0"/><path d="M790 500h14v60"/></g>${txt(812, 548, '安全出口', 11)}`;
+  // 设备：烟感、摄像头、报警主机、配电柜、服务器机柜、喷淋
+  [140, 200, 300, 560, 700].forEach(x => g += smoke(x, 271)); [160, 560, 720].forEach(x => g += smoke(x, 416)); [180, 520, 720].forEach(x => g += smoke(x, 129));
+  g += cam(96, 140) + cam(784, 286, 1) + cam(784, 430, 1) + cam(96, 430);
+  g += `<g stroke="${L}" stroke-width="1" fill="#fff"><rect x="196" y="488" width="40" height="72"/><path d="M202 500h28M202 512h28"/><circle cx="216" cy="530" r="3" fill="#E24B3B" stroke="none"/></g>`;
+  g += `<g stroke="${L}" stroke-width="1" fill="#fff"><rect x="268" y="470" width="36" height="90"/><path d="M276 482v68M286 482v68M296 482v68"/></g>`;
+  g += `<g stroke="${L}" stroke-width="1" fill="#fff"><rect x="104" y="180" width="28" height="90"/><rect x="138" y="180" width="28" height="90"/><path d="M110 192h16M110 204h16M144 192h16M144 204h16"/></g>`;
+  g += `<g stroke="${L}" stroke-width="1" fill="none"><rect x="190" y="196" width="60" height="38"/><rect x="198" y="234" width="44" height="4"/><path d="M196 202h48" stroke="${T}"/></g>`;
+  // 走廊里堆放的杂物
+  g += `<g stroke="${L}" stroke-width="1" fill="#EDEAE3"><rect x="690" y="520" width="34" height="40"/><rect x="726" y="534" width="26" height="26"/><rect x="700" y="500" width="22" height="20"/></g>`;
+  // 二层办公桌、三层货架
+  [120, 190].forEach(x => g += `<g stroke="${L}" stroke-width="1" fill="none"><path d="M${x} 392h46M${x + 4} 392v23M${x + 42} 392v23"/><rect x="${x + 10}" y="376" width="22" height="16"/></g>`);
+  [520, 580].forEach(x => g += `<g stroke="${L}" stroke-width="1" fill="none"><rect x="${x}" y="196" width="44" height="74"/><path d="M${x} 220h44M${x} 245h44"/></g>`);
+  // 房间名
+  g += txt(102, 548, '消防控制室') + txt(256, 440, '配电间') + txt(498, 548, '一层大厅 · 消防通道') + txt(102, 300, '二层办公区') + txt(498, 405, '二层走廊') + txt(184, 260, '三层监控中心') + txt(282, 260, '会议') + txt(498, 156, '三层仓储');
+  g += txt(441, 120, '楼梯间', 11, T, 'middle');
+  $('#draw').innerHTML = g;
+}
+// ── 用户可点的热点 ──
+const HOTS = [
+  { id: 'h1', x: 170, y: 470, room: '消防控制室', ops: ['值班人员脱岗', '值班时睡岗', '交接班说不清'] },
+  { id: 'h2', x: 708, y: 492, room: '消防通道', ops: ['通道被杂物占用', '安全出口被锁'], left: 1 },
+  { id: 'h3', x: 441, y: 360, room: '防火门', ops: ['防火门常开', '闭门器损坏'] },
+  { id: 'h4', x: 300, y: 300, room: '二层办公区', ops: ['烟感误报多', '烟感被遮挡'] },
+  { id: 'h5', x: 286, y: 450, room: '配电间', ops: ['检修时误切回路', '检修没有记录'] },
+  { id: 'h6', x: 220, y: 172, room: '监控中心', ops: ['监控画面没人看', '出事后回看找不到'] },
+];
+// ── 系统发现（金色）──
+const GOLD = [
+  { x: 110, y: 500, s: '夜间升级', room: '消防控制室', t: '夜间无人应答时的告警升级', d: '值班室在规定时间内没响应，自动逐级通知安全主管、物业负责人，直到有人接手。', b: [['ID', '你的身份：应急消防 · 物业园区']], p: 8 },
+  { x: 216, y: 532, s: '对接报警主机', room: '报警主机', t: '对接现有报警主机，不换硬件', d: '通过接口接入现有报警主机和监控平台，投入更小，上线更快。', b: [['ORG', '机构现状：已有报警系统和视频监控']], p: 9, left: 1 },
+  { x: 560, y: 296, s: '误报二次确认', room: '烟感', t: '烟感报警后自动调视频二次确认', d: '误报太多会淹没真警情。报警后先调附近画面核实，再决定是否升级。', b: [['PEER', '同类项目最常见的抱怨']], p: 8 },
+  { x: 152, y: 222, s: '数据不出园区', room: '机房', t: '视频数据不出园区', d: '识别员工行为涉及个人信息。视频在本地分析，只上传事件和截图，提前过合规。', b: [['RULE', '个人信息保护'], ['ID', '政务与公共服务']], p: 6 },
+  { x: 300, y: 522, s: '检修防护', room: '配电间', t: '检修窗口的临时防护', d: '检修时提示受影响区域，给出安全时间窗和补偿措施，检修完自动复核。', b: [['PEER', '脱岗之外的高发问题']], p: 5 },
+  { x: 600, y: 232, s: '巡查月报', room: '三层仓储', t: '自动生成巡查记录和月报', d: '识别到的问题和处置过程，自动整理成巡查记录，方便留存和报备。', b: [['RULE', '消防安全管理要求留存巡查记录']], p: 7 },
+  { x: 44, y: 596, s: '周界安防', room: '建筑外围', t: '同一套识别，顺手覆盖周界安防', d: '摄像头和识别能力已经在了，夜间周界入侵也能一起看。', b: [['ORG', '已有视频监控']], p: 4 },
+  { x: 720, y: 446, s: '预测性维护', room: '喷淋与烟感', t: '消防设施的预测性维护', d: '根据报警主机和设备数据，提前发现即将失效的烟感、喷淋。', b: [['PEER', '运维阶段常被追加']], p: 5, left: 1 },
+];
+const picked = {};   // 热点 id → 选中的问题
+const gstate = {};   // 金点序号 → 'ok' | 'no'
+function mkHot(o, gold, i) {
+  const b = document.createElement('button'); b.className = 'hot' + (gold ? ' gold' : '') + (o.left ? ' left' : ''); b.style.left = o.x + 'px'; b.style.top = o.y + 'px';
+  b.innerHTML = `<span class="ck">✓</span><span class="hl">${gold ? o.s : o.room}</span>`; b.dataset.i = i; $('#stage').appendChild(b);
+  b.onclick = e => { e.stopPropagation(); gold ? openGold(i, b) : openHot(i, b); }; return b;
+}
+function place(pop, el) { const r = el.getBoundingClientRect(), a = $('#app').getBoundingClientRect(), s = a.width / 1440; let x = (r.left - a.left) / s + 26, y = (r.top - a.top) / s - 20; if (x > 600) x -= 360; y = Math.min(y, 900 - 330); pop.style.left = x + 'px'; pop.style.top = y + 'px'; }
+function openHot(i, el) {
+  const h = HOTS[i], pop = $('#pop'), sel = new Set(picked[h.id] || []);
+  pop.className = 'on'; pop.innerHTML = `<small>${h.room}</small><h4>这里出了什么问题？</h4><div class="ops">${h.ops.map(o => `<button class="op ${sel.has(o) ? 'sel' : ''}"><i></i>${o}</button>`).join('')}</div><div class="row"><button id="ok">好</button></div>`;
+  place(pop, el);
+  pop.querySelectorAll('.op').forEach(b => b.onclick = () => { b.classList.toggle('sel'); const v = b.textContent; sel.has(v) ? sel.delete(v) : sel.add(v); });
+  $('#ok').onclick = () => { if (sel.size) picked[h.id] = [...sel]; else delete picked[h.id]; el.classList.toggle('done', sel.size > 0); pop.className = ''; renderTray(); };
+}
+function openGold(i, el) {
+  const g = GOLD[i], pop = $('#pop');
+  pop.className = 'on goldp'; pop.innerHTML = `<small>${g.room} · 你没点到的</small><h4>${g.t}</h4><p>${g.d}</p><div class="bas">${g.b.map(([k, v]) => `<span><b>${k}</b>${v}</span>`).join('')}</div><div class="peer">同类项目里 <em>${g.p}/10</em> 后来都补上了</div><div class="row two"><button class="nob" id="gno">不需要</button><button class="yesg" id="gok">加入需求</button></div>`;
+  place(pop, el);
+  $('#gok').onclick = () => { gstate[i] = 'ok'; el.classList.add('ok'); el.classList.remove('no'); pop.className = ''; renderTray(); };
+  $('#gno').onclick = () => { gstate[i] = 'no'; el.classList.add('no'); el.classList.remove('ok'); pop.className = ''; renderTray(); };
+}
+document.addEventListener('click', e => { if (!e.target.closest('#pop') && !e.target.closest('.hot')) $('#pop').className = ''; });
+
+// ── 右侧文档 ──
+let phase = 'user';
+function renderTray() {
+  const items = HOTS.flatMap(h => (picked[h.id] || []).map(o => [h.room, o, h.id]));
+  $('#nUser').textContent = items.length; $('#c1').textContent = items.length;
+  $('#mine').innerHTML = items.length ? items.map(([r, o, id]) => `<div class="need"><i>${r}</i><span>${o}</span><button data-id="${id}" data-o="${o}">×</button></div>`).join('') : '<div class="empty">还没有</div>';
+  $('#mine').querySelectorAll('button').forEach(b => b.onclick = () => { const a = picked[b.dataset.id].filter(x => x !== b.dataset.o); if (a.length) picked[b.dataset.id] = a; else { delete picked[b.dataset.id]; $$('.hot:not(.gold)')[HOTS.findIndex(h => h.id === b.dataset.id)].classList.remove('done'); } renderTray(); });
+  const issues = items.map(x => x[1]), ext = $('#extra').value.trim();
+  const acc = GOLD.filter((_, i) => gstate[i] === 'ok').map(g => g.t);
+  $('#sum').innerHTML = issues.length ? `为建筑消防场景建一个管理智能体，接入现有消防与视频系统，重点解决：${issues.join('、')}${ext ? '；另外，' + ext : ''}。${acc.length ? `同时纳入：${acc.join('、')}。` : ''}` : '<span class="ph2">在左边的现场里点出问题，这里会自动写成需求。</span>';
+  if (phase === 'user') { $('#cta').disabled = !items.length; $('#hint').textContent = items.length ? `已点出 ${items.length} 个问题。还有吗？没有就让我们看看漏了什么` : '至少点出一处，我们帮你看看还漏了什么'; }
+  else { $('#c2').textContent = `${Object.values(gstate).filter(v => v === 'ok').length} / 8`;
+    $('#found').innerHTML = GOLD.map((g, i) => `<div class="need gneed ${gstate[i] === 'no' ? 'no' : ''}"><i>${g.room}</i><span>${g.t}</span><button data-g="${i}" title="${gstate[i] === 'ok' ? '移出' : '加入'}">${gstate[i] === 'ok' ? '✓' : '+'}</button></div>`).join('');
+    $('#found').querySelectorAll('button').forEach(b => b.onclick = () => { const i = +b.dataset.g, el = $$('.hot.gold')[i]; gstate[i] = gstate[i] === 'ok' ? 'no' : 'ok'; el.classList.toggle('ok', gstate[i] === 'ok'); el.classList.toggle('no', gstate[i] === 'no'); renderTray(); }); }
+}
+$('#extra').oninput = renderTray;
+
+// ── 流程 ──
+async function enterSite() { $('#pick').classList.add('gone'); await wait(300); drawSite(); HOTS.forEach((h, i) => mkHot(h, false, i)); $('#site').classList.add('on'); renderTray(); }
+$('#cta').onclick = async () => {
+  if (phase === 'done') {  (window.UX ? UX.goMatch() : (location.href='step3-匹配组网.html')) ; return; }
+  phase = 'scan'; $('#cta').disabled = true; $('#cta').textContent = '正在对照同类项目和行业规范 ···'; $('#pop').className = '';
+  $('#sTitle').innerHTML = '再看一遍你的现场 ···'; $('#sSub').textContent = '对照你的身份、机构现状、同类项目和行业规范';
+  const scan = $('#scan'), golds = GOLD.map((g, i) => mkHot(g, true, i)); scan.style.opacity = 1;
+  const t0 = performance.now(), D = 2600;
+  await new Promise(res => { (function step(now) { const u = Math.min(1, (now - t0) / D), x = -10 + u * 900; scan.style.left = x + 'px';
+    golds.forEach((el, i) => { if (!el.classList.contains('on') && GOLD[i].x < x) el.classList.add('on'); }); if (u < 1) requestAnimationFrame(step); else res(); })(t0); });
+  scan.style.transition = 'opacity .5s'; scan.style.opacity = 0;
+  phase = 'done'; GOLD.forEach((_, i) => gstate[i] = gstate[i] || 'ok');
+  golds.forEach((el, i) => el.classList.add('ok'));
+  $('#sTitle').innerHTML = '你没点到的地方，<em>我们发现了 8 处</em>'; $('#sSub').textContent = '已默认加入需求。点金色光点看依据，不需要的去掉。';
+  $('#gsec').style.display = ''; renderTray(); $('#tb').scrollTo({ top: $('#gsec').offsetTop - 10, behavior: 'smooth' });
+  $('#hint').textContent = '确认后，平台按这份需求开始组网'; $('#cta').textContent = '确认需求，开始组网 →'; $('#cta').classList.add('gold'); $('#cta').disabled = false;
+};
+function fit() { const s = Math.min(innerWidth / 1440, innerHeight / 900), a = $('#app'); a.style.transform = `translate(${(innerWidth - 1440 * s) / 2}px,${(innerHeight - 900 * s) / 2}px) scale(${s})`; }
+addEventListener('resize', fit); fit();
+document.fonts.ready.then(() => { window.__ready = true; });
+</script>
+</body>
+</html>

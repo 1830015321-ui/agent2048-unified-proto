@@ -1,0 +1,97 @@
+/* 清单补全层 · 登录 / 工作台 / 多任务卡 / DAG / 组网三态 / 轮播 */
+#loginAct,#workbenchAct{position:fixed;inset:0;z-index:42;display:none;align-items:center;justify-content:center;
+  background:radial-gradient(1200px 700px at 50% -10%,rgba(21,67,242,.22),transparent 55%),#06070A;color:#ECEAE4}
+#loginAct.on,#workbenchAct.on{display:flex}
+#loginAct .lp,#workbenchAct .wb{width:min(920px,92vw);max-height:min(860px,90vh);overflow:auto;
+  border:1px solid rgba(255,255,255,.12);border-radius:18px;background:rgba(14,17,26,.92);
+  box-shadow:0 30px 80px rgba(0,0,0,.45);padding:36px 36px 28px}
+#loginAct .lp{width:min(460px,92vw)}
+#loginAct h2,#workbenchAct h2{margin:0 0 8px;font:600 28px/1.3 NSerif,"PingFang SC",serif;letter-spacing:.08em}
+#loginAct .sub,#workbenchAct .sub{margin:0 0 22px;font:400 13.5px/1.6 NSans;color:rgba(236,234,228,.55)}
+#loginAct .tabs{display:flex;gap:8px;margin-bottom:18px}
+#loginAct .tabs button{flex:1;border:1px solid rgba(255,255,255,.14);background:transparent;color:rgba(236,234,228,.7);
+  padding:10px 12px;border-radius:10px;font:500 13px NSans;cursor:pointer}
+#loginAct .tabs button.on{border-color:rgba(111,147,255,.7);color:#fff;background:rgba(77,123,255,.14)}
+#loginAct .f{margin-bottom:14px}
+#loginAct .f label{display:flex;justify-content:space-between;font:500 12px NSans;color:rgba(236,234,228,.55);margin-bottom:6px}
+#loginAct .f input{width:100%;box-sizing:border-box;border:1px solid rgba(255,255,255,.14);border-radius:10px;
+  background:rgba(255,255,255,.04);color:#fff;padding:12px 14px;font:400 14px NSans}
+#loginAct .sign{width:100%;margin-top:8px;border:0;border-radius:12px;padding:14px 16px;cursor:pointer;
+  background:linear-gradient(160deg,#1543F2,#0A2AB8);color:#fff;font:500 15px NSans}
+#loginAct .hint{margin-top:14px;font:400 12px/1.55 NSans;color:rgba(236,234,228,.4)}
+#loginAct .back{margin-top:16px;background:none;border:0;color:rgba(111,147,255,.9);font:500 13px NSans;cursor:pointer}
+
+#workbenchAct .wb-hd{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;margin-bottom:18px}
+#workbenchAct .wb-acts{display:flex;gap:8px;flex-wrap:wrap}
+#workbenchAct .wb-acts button{border:1px solid rgba(255,255,255,.16);background:rgba(255,255,255,.04);color:#ECEAE4;
+  border-radius:10px;padding:10px 14px;font:500 13px NSans;cursor:pointer}
+#workbenchAct .wb-acts button.primary{border:0;background:linear-gradient(160deg,#1543F2,#0A2AB8);color:#fff}
+#workbenchAct .wb-list{display:grid;gap:12px}
+#workbenchAct .wb-card{border:1px solid rgba(255,255,255,.12);border-radius:14px;padding:16px 18px;background:rgba(255,255,255,.03);cursor:pointer}
+#workbenchAct .wb-card:hover{border-color:rgba(111,147,255,.55)}
+#workbenchAct .wb-card b{display:block;font:600 15px NSans;margin-bottom:6px}
+#workbenchAct .wb-card span{display:block;font:400 12.5px/1.55 NSans;color:rgba(236,234,228,.55)}
+#workbenchAct .wb-card em{display:inline-block;margin-top:10px;font:500 11px JBM;font-style:normal;letter-spacing:.06em;
+  padding:4px 8px;border-radius:999px;border:1px solid rgba(255,255,255,.14);color:rgba(236,234,228,.7)}
+#workbenchAct .wb-card em.ok{border-color:rgba(90,200,150,.45);color:#8BE0B5}
+#workbenchAct .wb-card em.partial{border-color:rgba(226,181,90,.5);color:#E2B55A}
+#workbenchAct .wb-card em.fail{border-color:rgba(255,107,94,.5);color:#FF8E82}
+#workbenchAct .wb-card em.draft{border-color:rgba(111,147,255,.45);color:#9BB4FF}
+
+/* demand task cards + DAG */
+#demandAct .dm-task-stack{display:grid;gap:14px}
+#demandAct .dm-task-card{border:1px solid rgba(15,23,42,.12);border-radius:14px;background:#fff;overflow:hidden}
+#demandAct .dm-task-card > summary,#demandAct .dm-task-card .dm-task-hd{
+  display:flex;align-items:center;gap:10px;padding:12px 14px;cursor:pointer;list-style:none;background:#F7F8FA}
+#demandAct .dm-task-card .dm-task-idx{font:600 11px JBM;letter-spacing:.08em;color:#6B7280}
+#demandAct .dm-task-card .dm-task-name{font:600 14px NSans;color:#111827;flex:1}
+#demandAct .dm-task-card .dm-dep{font:500 11px NSans;color:#9CA3AF}
+#demandAct .dm-task-body{padding:12px 14px 14px;display:grid;gap:10px}
+#demandAct .dm-aud{display:flex;flex-wrap:wrap;gap:6px}
+#demandAct .dm-aud button{border:1px solid #E5E7EB;background:#fff;color:#4B5563;border-radius:999px;padding:6px 11px;
+  font:500 12px NSans;cursor:pointer}
+#demandAct .dm-aud button.on{border-color:#1543F2;background:rgba(21,67,242,.08);color:#1543F2}
+#demandAct .dm-expect{margin:0;font:400 13px/1.55 NSans;color:#374151}
+#demandAct .dm-fold{border:1px solid #EEF0F3;border-radius:10px;padding:8px 10px;background:#FAFBFC}
+#demandAct .dm-fold summary{cursor:pointer;font:500 12px NSans;color:#6B7280}
+#demandAct .dm-fold p{margin:8px 0 0;font:400 12.5px/1.55 NSans;color:#4B5563}
+#demandAct .dm-dag{border:1px solid #EEF0F3;border-radius:12px;padding:12px;background:#FCFCFD;min-height:180px;position:relative}
+#demandAct .dm-dag-canvas{width:100%;height:220px;display:block}
+#demandAct .dm-dag-meta{display:flex;justify-content:space-between;gap:8px;margin-bottom:8px;font:500 11px JBM;color:#9CA3AF}
+#demandAct .dm-node-pop{position:absolute;z-index:5;right:12px;top:40px;width:min(260px,70%);border:1px solid #E5E7EB;
+  border-radius:12px;background:#fff;box-shadow:0 12px 30px rgba(15,23,42,.12);padding:12px;font:400 12px/1.5 NSans;color:#374151}
+#demandAct .dm-node-pop b{display:block;font:600 13px NSans;color:#111827;margin-bottom:6px}
+#demandAct .dm-node-pop .out{margin-top:8px;color:#1543F2}
+#demandAct .dm-node-pop button{margin-top:8px;border:0;background:none;color:#6B7280;cursor:pointer;font:500 12px NSans}
+#demandAct .dm-actions-row{display:flex;flex-wrap:wrap;gap:8px;margin-top:4px}
+#demandAct .dm-actions-row .dm-btn{font-size:12.5px}
+#demandAct #dmConfirmAll{min-width:180px}
+#demandAct .dm-case-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+#demandAct .dm-case{border:1px solid rgba(21,67,242,.35)!important}
+#demandAct .dm-case.edu{border-color:rgba(16,185,129,.45)!important;color:#059669}
+#demandAct .dm-demo-outcomes{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+#demandAct .dm-demo-outcomes button{border:1px dashed #D1D5DB;background:#fff;border-radius:8px;padding:6px 9px;
+  font:500 11.5px NSans;color:#6B7280;cursor:pointer}
+
+/* match wait carousel + outcome banner */
+#matchAct #mCarousel{position:absolute;left:50%;bottom:118px;transform:translateX(-50%);z-index:8;width:min(560px,86%);
+  text-align:center;pointer-events:none;opacity:0;transition:opacity .35s}
+#matchAct #mCarousel.on{opacity:1}
+#matchAct #mCarousel b{display:block;font:600 20px/1.35 NSerif,"PingFang SC",serif;letter-spacing:.06em;color:#fff;text-shadow:0 8px 30px rgba(0,0,0,.45)}
+#matchAct #mCarousel span{display:block;margin-top:8px;font:400 13px/1.6 NSans;color:rgba(236,234,228,.72)}
+#matchAct #mOutcomeBanner{position:absolute;top:78px;left:50%;transform:translateX(-50%);z-index:9;
+  display:none;align-items:center;gap:10px;padding:10px 16px;border-radius:999px;border:1px solid rgba(255,255,255,.18);
+  background:rgba(10,12,18,.78);backdrop-filter:blur(10px);font:500 13px NSans;color:#fff}
+#matchAct #mOutcomeBanner.on{display:flex}
+#matchAct #mOutcomeBanner.success{border-color:rgba(90,200,150,.55)}
+#matchAct #mOutcomeBanner.partial{border-color:rgba(226,181,90,.55)}
+#matchAct #mOutcomeBanner.fail{border-color:rgba(255,107,94,.55)}
+#matchAct .mrnode .sk{display:block;margin-top:3px;font:400 10px NSans;color:rgba(236,234,228,.45)}
+#matchAct .mrnode .why{display:block;margin-top:4px;font:400 10.5px/1.4 NSans;color:#FF8E82}
+#matchAct .mroutcome-fail{padding:18px;border:1px dashed rgba(255,107,94,.5);border-radius:12px;color:#FFB4AC;font:400 13px/1.6 NSans}
+
+/* chrome workbench entry */
+#ux-chrome .ux-wb{margin-left:8px;border:1px solid rgba(255,255,255,.16);background:rgba(255,255,255,.04);color:inherit;
+  border-radius:999px;padding:6px 10px;font:500 11px NSans;cursor:pointer;display:none}
+#ux-chrome .ux-wb.on{display:inline-flex}
+#ux-chrome.theme-light .ux-wb{border-color:rgba(15,23,42,.14);background:#fff}

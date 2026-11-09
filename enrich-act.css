@@ -1,0 +1,171 @@
+/* 完善信息 · 组网前同页幕
+   布局：flex 文档流（顶栏 / 双栏卡片 / 底栏），避免 .eh/.e-grid/.foot 绝对定位叠层 */
+#enrichAct{
+  --bg:#F3F1EC;--sheet:#FBFAF7;--ink:#15171C;--ink2:#5B606B;--ink3:#9A9EA6;--rule:#E3E0D8;
+  --blue:#0D3BE8;--blue-t:#EEF2FF;--gold:#A67C25;--gold-t:#FBF4E3;
+  position:absolute;inset:0;z-index:57;
+  background:var(--bg);color:var(--ink);
+  font-family:NSans,"PingFang SC","Microsoft YaHei",system-ui,sans-serif;
+  -webkit-font-smoothing:antialiased;
+  display:flex;flex-direction:column;
+  padding:72px 56px 0; /* 给 #ux-chrome(64px) 留空 */
+  box-sizing:border-box;
+  opacity:0;pointer-events:none;
+  transform:translateY(28px) scale(.988);
+  clip-path:inset(100% 0 0 0);
+  transition:opacity .85s cubic-bezier(.2,.8,.2,1),transform 1.05s cubic-bezier(.2,.8,.2,1),clip-path 1.15s cubic-bezier(.22,.82,.2,1);
+}
+#enrichAct.on{opacity:1;pointer-events:auto;transform:none;clip-path:inset(0)}
+#enrichAct.enter::before{
+  content:"";position:absolute;left:0;right:0;top:0;height:40%;z-index:1;pointer-events:none !important;
+  background:linear-gradient(180deg,#F3F1EC 0%,rgba(243,241,236,.7) 50%,transparent);
+  opacity:1;animation:enrichVeil .9s .1s forwards cubic-bezier(.2,.8,.2,1);
+}
+@keyframes enrichVeil{to{opacity:0;transform:translateY(-8%)}}
+#enrichAct.on:not(.enter)::before{content:none;opacity:0;pointer-events:none !important}
+#enrichAct.leaving{opacity:0;pointer-events:none;transform:translateY(-14px);transition:opacity .6s,transform .75s}
+#demandAct.leaving-to-enrich{
+  opacity:0;pointer-events:none;transform:translateY(-16px) scale(.99);
+  transition:opacity .65s,transform .8s;
+}
+#app.enrich-mode > #bg,
+#app.enrich-mode > #earth,
+#app.enrich-mode > #lights,
+#app.enrich-mode > .grid,
+#app.enrich-mode > .topbeam,
+#app.enrich-mode > .credit,
+#app.enrich-mode > .top,
+#app.enrich-mode > .layer,
+#app.enrich-mode > #demandAct,
+#app.enrich-mode > #matchAct{opacity:0!important;pointer-events:none!important}
+#enrichAct *{box-sizing:border-box}
+#enrichAct button{font:inherit;cursor:pointer}
+
+/* 标题区 · 文档流，不再 absolute */
+#enrichAct .eh{
+  position:relative;z-index:3;
+  flex:0 0 auto;
+  padding:8px 0 0;
+  margin-bottom:8px;
+}
+#enrichAct .eh small{font:500 11px JBM;letter-spacing:.32em;color:var(--ink3)}
+#enrichAct .eh h1{margin:10px 0 0;font:600 32px/1.3 NSerif;letter-spacing:.06em}
+#enrichAct .eh p{margin:10px 0 0;font:400 15px NSans;color:var(--ink2);max-width:640px}
+
+/* 勿用 .grid：会撞上 step1 地球装饰层的 .grid（pointer-events:none + -webkit-mask → 发雾且点不了） */
+#enrichAct .e-grid{
+  position:relative;z-index:2;
+  flex:1 1 auto;min-height:0;
+  display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);gap:22px;
+  align-content:stretch;align-items:stretch;
+  overflow:auto;padding:10px 0 16px;
+  pointer-events:auto;
+  background:none;background-image:none;
+  -webkit-mask:none;mask:none;
+}
+#enrichAct .e-card{
+  /* 覆盖 step1 全局 .card{position:absolute;width:600px;height:860px} */
+  position:relative !important;left:auto !important;top:auto !important;
+  width:auto !important;height:auto !important;max-width:none;transform:none !important;
+  transform-origin:initial;overflow:visible;color:inherit;
+  background:var(--sheet);border:1px solid var(--rule);border-radius:16px;padding:22px 24px;
+  min-width:0;height:100%;
+  box-shadow:0 1px 0 #fff inset,0 18px 40px -32px rgba(30,35,60,.22);
+}
+#enrichAct .e-card h3{margin:0 0 6px;font:600 16px NSans}
+#enrichAct .e-card .hint{margin:0 0 14px;font:400 12.5px NSans;color:var(--ink3)}
+#enrichAct .chips{display:flex;flex-wrap:wrap;gap:8px}
+#enrichAct .chip{
+  border:1px solid var(--rule);background:#fff;color:var(--ink);
+  font:500 13.5px NSans;padding:8px 14px;border-radius:999px;transition:all .15s;
+}
+#enrichAct .chip:hover{border-color:var(--ink3)}
+#enrichAct .chip.on{background:var(--ink);color:#fff;border-color:var(--ink)}
+#enrichAct .chip.soft.on{background:var(--blue-t);color:var(--blue);border-color:#C9D4FF}
+#enrichAct label.f{display:block;margin-top:14px}
+#enrichAct label.f span{display:block;font:500 11px JBM;letter-spacing:.18em;color:var(--ink3);margin-bottom:6px}
+#enrichAct label.f input, #enrichAct label.f select, #enrichAct label.f textarea{
+  width:100%;border:1px solid var(--rule);background:#fff;border-radius:10px;
+  font:400 14.5px NSans;padding:11px 12px;color:var(--ink);outline:0;
+}
+#enrichAct label.f textarea{min-height:72px;resize:vertical}
+#enrichAct .sum{
+  margin-top:16px;padding:14px 16px;border-radius:12px;background:var(--blue-t);border:1px solid #D6DEFF;
+  font:400 13.5px/1.7 NSans;color:var(--ink2);
+}
+#enrichAct .sum b{color:var(--ink);font-weight:500}
+
+/* 底栏 · 文档流 */
+#enrichAct .foot{
+  position:relative;z-index:4;
+  flex:0 0 auto;
+  display:flex;align-items:center;justify-content:space-between;gap:16px;
+  min-height:88px;padding:16px 0;
+  margin:0 -56px;padding-left:56px;padding-right:56px;
+  border-top:1px solid var(--rule);background:rgba(243,241,236,.92);backdrop-filter:blur(6px);
+}
+#enrichAct .foot .note{font:400 13px NSans;color:var(--ink3)}
+#enrichAct .foot .cta{
+  border:0;background:var(--ink);color:#fff;font:500 15px NSans;
+  padding:14px 22px;border-radius:12px;
+}
+#enrichAct .foot .cta:disabled{opacity:.35;cursor:default}
+#enrichAct .foot .back{
+  background:none;border:1px solid var(--rule);color:var(--ink2);
+  font:500 13.5px NSans;padding:10px 14px;border-radius:10px;margin-right:10px;
+}
+
+/* 收听说明 · 轻量听控 */
+#enrichAct .eh-top{
+  display:flex;align-items:center;justify-content:space-between;gap:16px;
+}
+#enrichAct .listen-btn{
+  flex:0 0 auto;
+  display:inline-flex;align-items:center;gap:8px;
+  border:1px solid var(--rule);background:#fff;color:var(--ink);
+  font:500 13px NSans;padding:8px 14px 8px 12px;border-radius:999px;
+  box-shadow:0 1px 0 rgba(21,23,28,.04);
+  transition:background .15s,border-color .15s,color .15s,box-shadow .15s;
+  position:relative;
+}
+#enrichAct .listen-btn:hover{border-color:var(--ink3);background:#FFFEFA}
+#enrichAct .listen-btn:focus-visible{outline:2px solid var(--blue);outline-offset:2px}
+#enrichAct .listen-ico{
+  width:18px;height:18px;border-radius:50%;
+  background:var(--ink);color:#fff;
+  display:inline-flex;align-items:center;justify-content:center;
+  position:relative;flex:0 0 auto;
+}
+#enrichAct .listen-ico::before{
+  content:"";
+  width:0;height:0;
+  border-style:solid;border-width:5px 0 5px 8px;
+  border-color:transparent transparent transparent #fff;
+  margin-left:1px;
+}
+#enrichAct .listen-btn.playing .listen-ico::before{
+  width:3px;height:10px;border:0;margin:0;
+  background:#fff;box-shadow:5px 0 0 #fff;border-radius:1px;
+}
+#enrichAct .listen-btn.playing{
+  background:var(--ink);color:#fff;border-color:var(--ink);
+}
+#enrichAct .listen-btn.playing .listen-ico{background:rgba(255,255,255,.18)}
+#enrichAct .listen-btn.paused .listen-ico{background:var(--gold)}
+#enrichAct .listen-btn.done .listen-lab::after{content:""}
+#enrichAct .listen-hint{
+  display:none;font:500 11px NSans;color:var(--gold);
+  padding:2px 8px;border-radius:999px;background:var(--gold-t);
+  letter-spacing:.02em;
+}
+#enrichAct .listen-btn.need-tap .listen-hint{display:inline-flex}
+#enrichAct .listen-btn.playing .listen-hint,
+#enrichAct .listen-btn.paused .listen-hint{display:none}
+
+/* 窄屏：双栏改单列，避免挤压成「乱码」叠字 */
+@media (max-width:1080px){
+  #enrichAct{padding:72px 28px 0}
+  #enrichAct .e-grid{grid-template-columns:1fr}
+  #enrichAct .foot{margin:0 -28px;padding-left:28px;padding-right:28px}
+  #enrichAct .eh h1{font-size:26px}
+}

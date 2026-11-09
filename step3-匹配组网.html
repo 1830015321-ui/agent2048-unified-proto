@@ -1,0 +1,248 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<title>第三步 · 3D 组网 · Demo v2</title>
+<style>
+@font-face{font-family:"NR";src:url(fonts/newsreader-400.woff2) format("woff2");font-weight:400}
+@font-face{font-family:"NSerif";src:url(fonts/noto-serif-sc-400.woff2) format("woff2");font-weight:400}
+@font-face{font-family:"NSerif";src:url(fonts/noto-serif-sc-600.woff2) format("woff2");font-weight:600}
+@font-face{font-family:"NSans";src:url(fonts/NotoSansSC-var.ttf) format("truetype");font-weight:100 900}
+@font-face{font-family:"JBM";src:url(fonts/JetBrainsMono-var.ttf) format("truetype");font-weight:100 800}
+:root{--ink:#ECEAE4;--mut:rgba(236,234,228,.58);--faint:rgba(236,234,228,.28);--line:rgba(255,255,255,.12);--blue:#4D7BFF;--gold:#E2B55A;--red:#FF6B5E}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;background:#000;overflow:hidden}
+body{font-family:NSans,"PingFang SC","Microsoft YaHei",system-ui,sans-serif;color:var(--ink);-webkit-font-smoothing:antialiased}
+#app{position:absolute;left:0;top:0;width:1440px;height:900px;background:#05060A;transform-origin:0 0;overflow:hidden}
+canvas{position:absolute;inset:0}
+#ui{position:absolute;inset:0;pointer-events:none}
+.p{pointer-events:auto}
+button{font:inherit;cursor:pointer}
+.hd{position:absolute;left:36px;top:28px}
+.hd b{display:block;font:600 16px NSerif;letter-spacing:.14em}
+.hd small{display:block;margin-top:5px;font:500 10.5px JBM;letter-spacing:.24em;color:var(--mut)}
+.clock{position:absolute;left:50%;top:30px;transform:translateX(-50%);font:500 12.5px JBM;letter-spacing:.3em;color:var(--mut)}
+.clock b{color:var(--ink);font-weight:500}
+.tr{position:absolute;right:36px;top:24px}
+.tr button{background:rgba(255,255,255,.04);border:1px solid var(--line);color:var(--mut);font:400 13px NSans;padding:7px 14px;border-radius:999px}
+.left{position:absolute;left:36px;top:132px;width:200px}
+.lt{font:500 10px JBM;letter-spacing:.3em;color:var(--faint);margin-bottom:12px}
+.ph{display:flex;gap:11px;padding:7px 0;opacity:.3;transition:opacity .4s}
+.ph.on{opacity:1}.ph.done{opacity:.6}
+.ph i{width:8px;height:8px;border-radius:50%;border:1.5px solid var(--mut);margin-top:6px;flex:none}
+.ph.on i{background:var(--blue);border-color:var(--blue);box-shadow:0 0 10px var(--blue)}
+.ph.done i{background:var(--gold);border-color:var(--gold)}
+.ph b{font:500 14px NSans}
+.num{margin-top:26px;padding-top:16px;border-top:1px solid var(--line)}
+.num div{margin-bottom:14px}
+.num small{display:block;font:500 10px JBM;letter-spacing:.24em;color:var(--faint)}
+.num b{display:block;margin-top:3px;font:400 30px NR}
+.num b em{font:400 13px NSans;font-style:normal;color:var(--mut);margin-left:6px}
+.needs{position:absolute;right:32px;top:120px;width:268px}
+.needs .t{display:flex;justify-content:space-between;align-items:baseline;font:500 10px JBM;letter-spacing:.26em;color:var(--faint);margin-bottom:10px}
+.needs .t b{font:400 26px NR;color:var(--ink);letter-spacing:0}
+.needs .t b em{font:400 13px NR;font-style:normal;color:var(--mut)}
+.nd{display:flex;align-items:center;gap:9px;padding:7px 10px;margin-bottom:5px;border:1px solid var(--line);border-radius:8px;font:400 13px NSans;color:var(--mut);background:rgba(10,12,20,.6);
+  opacity:0;transform:translateX(14px);transition:all .45s cubic-bezier(.2,.8,.2,1)}
+.nd.in{opacity:1;transform:none}
+.nd i{width:7px;height:7px;border-radius:50%;background:rgba(255,255,255,.25);flex:none;transition:all .3s}
+.nd.g i{background:rgba(226,181,90,.45)}
+.nd.match{color:var(--ink);border-color:rgba(77,123,255,.45)}.nd.match i{background:var(--blue);box-shadow:0 0 8px var(--blue)}
+.nd.cov{color:var(--ink);border-color:rgba(226,181,90,.6)}.nd.cov i{background:var(--gold);box-shadow:0 0 8px var(--gold)}
+.nd span{flex:1}.nd small{font:500 10px JBM;letter-spacing:.1em;color:var(--gold)}
+.nd.gap{border-color:rgba(255,107,94,.45);color:var(--ink)}.nd.gap i{background:var(--red)}.nd.gap small{color:var(--red)}
+.log{position:absolute;left:36px;bottom:24px;width:760px;height:66px;overflow:hidden;font:500 11.5px/22px JBM;letter-spacing:.05em;color:var(--faint);-webkit-mask:linear-gradient(transparent,#000 45%)}
+.log div:last-child{color:var(--mut)}.log b{color:var(--blue);font-weight:500;margin-right:12px}
+.lab{position:absolute;left:0;top:0;white-space:nowrap;opacity:0;will-change:transform,opacity}
+.beam{font:400 12px NSans;color:#C9D6FF;padding:3px 8px;border:1px solid rgba(77,123,255,.4);background:rgba(5,8,20,.75);border-radius:4px}
+.beam.g{color:var(--gold);border-color:rgba(226,181,90,.5)}
+.node{pointer-events:auto;cursor:pointer;width:200px;padding:10px 13px;border:1px solid rgba(120,150,255,.5);background:linear-gradient(160deg,rgba(18,24,48,.92),rgba(8,10,20,.92));border-radius:10px;
+  box-shadow:0 0 30px rgba(77,123,255,.18);transition:border-color .3s}
+.node:hover{border-color:#fff}
+.node small{display:block;font:500 10px JBM;letter-spacing:.18em;color:var(--blue)}
+.node b{display:block;margin-top:4px;font:500 15px NSans;color:#fff}
+.node span{display:block;margin-top:3px;font:400 11.5px NSans;color:var(--mut)}
+.node .cv{display:flex;flex-wrap:wrap;gap:4px;margin-top:7px}
+.node .cv em{font:400 10.5px NSans;font-style:normal;color:var(--gold);border:1px solid rgba(226,181,90,.45);padding:1px 6px;border-radius:3px}
+.node .tg{display:inline-block;margin-top:6px;font:500 10px JBM;letter-spacing:.12em;color:#7FE0C3;border:1px solid rgba(127,224,195,.45);padding:1px 6px;border-radius:3px}
+.conflict{font:500 12px NSans;color:var(--red);padding:5px 10px;border:1px solid rgba(255,107,94,.5);background:rgba(30,8,8,.88);border-radius:6px}
+.why{font:400 11px NSans;color:var(--red)}
+#ask{position:absolute;left:50%;bottom:120px;width:540px;margin-left:-270px;background:rgba(10,12,22,.94);border:1px solid rgba(255,255,255,.18);border-radius:14px;padding:16px 20px;text-align:center;opacity:0;pointer-events:none;transition:opacity .4s}
+#ask.on{opacity:1;pointer-events:auto}
+#ask h4{margin:0 0 4px;font:500 16px NSans}#ask p{margin:0 0 12px;font:400 12px NSans;color:var(--mut)}
+#ask .o{display:flex;gap:8px}#ask .o button{flex:1;background:none;border:1px solid rgba(255,255,255,.22);color:var(--ink);padding:9px 0;border-radius:8px;font:500 14px NSans}
+#ask .o button:hover{border-color:var(--gold);color:var(--gold)}#ask .o button.sel{background:var(--gold);color:#111;border-color:var(--gold)}
+#ask .bar{height:2px;background:rgba(255,255,255,.1);margin-top:12px;border-radius:2px}#ask .bar i{display:block;height:100%;width:0;background:var(--gold)}
+#pop{position:absolute;width:290px;background:#0C0F1A;border:1px solid rgba(255,255,255,.2);border-radius:12px;padding:16px 18px;display:none;box-shadow:0 20px 50px rgba(0,0,0,.6);pointer-events:auto;z-index:40}
+#pop small{font:500 10px JBM;letter-spacing:.2em;color:var(--blue)}#pop h5{margin:7px 0 6px;font:500 17px NSans}#pop p{margin:0 0 10px;font:400 12.5px/1.65 NSans;color:var(--mut)}
+#pop .st{font:500 11.5px NSans;padding:2px 8px;border:1px solid var(--gold);color:var(--gold);border-radius:4px}#pop .st.out{border-color:var(--red);color:var(--red)}
+#pop .x{position:absolute;right:10px;top:8px;background:none;border:0;color:var(--mut);font-size:16px}
+#done{position:absolute;left:50%;top:96px;transform:translateX(-50%);text-align:center;opacity:0;transition:opacity .6s}
+#done .s{display:inline-block;border:1.5px solid var(--gold);color:var(--gold);padding:8px 18px;border-radius:4px}
+#done .s b{display:block;font:600 20px NSerif;letter-spacing:.3em;margin-right:-.3em}#done .s small{display:block;margin-top:3px;font:500 10px JBM;letter-spacing:.2em}
+#cta{position:absolute;left:50%;bottom:116px;transform:translateX(-50%);border:0;background:#ECEAE4;color:#111;font:500 15px NSans;padding:13px 26px;border-radius:10px;opacity:0;pointer-events:none;transition:opacity .5s}
+#sheet{position:absolute;left:50%;top:50%;width:620px;height:760px;margin:-380px 0 0 -310px;background:#FBFAF7;border-radius:6px;transform-origin:center}
+#sheet h3{margin:34px 40px 0;font:600 24px NSerif;color:#15171C;letter-spacing:.12em}
+#sheet .l{margin:14px 40px 0;height:10px;background:#E9E6DE;border-radius:2px}
+.demo{position:absolute;right:32px;bottom:22px;font:400 11px NSans;color:var(--faint);pointer-events:auto}
+.demo button{background:none;border:1px solid var(--line);color:var(--mut);font:500 11px JBM;padding:3px 8px;border-radius:5px;margin-left:6px}
+</style>
+<link rel="stylesheet" href="shell.css">
+<script src="shell.js"></script>
+</head>
+<body>
+<div id="app">
+  <canvas id="cv" width="1440" height="900"></canvas>
+  <div id="ui">
+    <div class="hd"><b>正在为你组网</b><small>REQ · 0712-0001 · 发起人 陈思远</small></div>
+    <div class="clock">已用时 <b id="clk">00:00</b></div>
+    <div class="tr p"><button>收起，好了通知我</button></div>
+    <div class="left"><div class="lt">进度</div><div id="phs"></div>
+      <div class="num"><div><small>检索范围</small><b id="nA">—</b></div><div><small>候选智能体</small><b id="nC">—</b></div><div><small>入网</small><b id="nN">—</b></div></div></div>
+    <div class="needs"><div class="t"><span>需求覆盖</span><b id="cov">0<em> / 11</em></b></div><div id="nds"></div></div>
+    <div class="log" id="log"></div>
+    <div id="ask"><h4>你更看重哪一点？</h4><p>选一个，网络会按它调整 · 6 秒不选按「上线快」</p><div class="o"><button data-v="fast">上线快</button><button data-v="cheap">成本低</button><button data-v="local">本地部署</button></div><div class="bar"><i id="askBar"></i></div></div>
+    <div id="pop"><button class="x">×</button><small id="pk"></small><h5 id="pn"></h5><p id="pd"></p><span class="st" id="ps"></span></div>
+    <div id="done"><div class="s"><b>组网方案已生成</b><small>签发给 陈思远 · SI · 0712 · 0004</small></div></div>
+    <button id="cta" class="p" onclick="if(this.style.pointerEvents==='none')return;window.UX?UX.goScheme():(location.href='step4-组网方案.html')">查看完整组网方案 →</button>
+    <div class="demo">Demo v2 · 示例节奏 40 秒<button id="x2">×2 速</button><button id="rp">↻ 重播</button></div>
+  </div>
+  <div id="sheet"><h3>需求文档</h3><div class="l"></div><div class="l" style="width:70%"></div><div class="l"></div><div class="l" style="width:50%"></div></div>
+</div>
+<script>
+const W = 1440, H = 900, CX = 720, CY = 470, END = 40, $ = s => document.querySelector(s), $$ = s => [...document.querySelectorAll(s)];
+const cv = $('#cv'), ctx = cv.getContext('2d');
+const clamp = (x, a = 0, b = 1) => Math.min(b, Math.max(a, x)), lerp = (a, b, u) => a + (b - a) * u, seg = (t, a, b) => clamp((t - a) / (b - a));
+const eo = u => u >= 1 ? 1 : 1 - Math.pow(2, -10 * u), eio = u => u < .5 ? 2 * u * u : 1 - Math.pow(-2 * u + 2, 2) / 2;
+function rng(a) { return () => { a |= 0; a = a + 0x6D2B79F5 | 0; let t = Math.imul(a ^ a >>> 15, 1 | a); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
+function glow(x, y, r, c, a) { if (a <= 0 || r <= 0) return; const g = ctx.createRadialGradient(x, y, 0, x, y, r); g.addColorStop(0, `rgba(${c},${a})`); g.addColorStop(1, `rgba(${c},0)`); ctx.fillStyle = g; ctx.fillRect(x - r, y - r, 2 * r, 2 * r); }
+
+// ── 需求（来自第二步：你点出的 3 条 + 我们发现的 8 条）──
+const NEEDS = [['值班人员脱岗', 0], ['通道被杂物占用', 0], ['烟感误报多', 0], ['夜间升级', 1], ['对接报警主机', 1], ['误报二次确认', 1], ['数据不出园区', 1], ['检修防护', 1], ['巡查月报', 1], ['周界安防', 1], ['预测性维护', 1]];
+NEEDS.forEach((n, i) => n.ang = i / NEEDS.length * Math.PI * 2 + .3);
+// ── 3D 旋涡星系：3000 个智能体 ──
+const R = rng(2048), N = 3000, ST = [];
+for (let i = 0; i < N; i++) { const arm = i % 3, r = 60 + Math.pow(R(), .62) * 560, a = arm * 2.094 + r * .0105 + (R() - .5) * .55, th = (R() + R() + R() - 1.5) * 26 * (1 - r / 700);
+  ST.push({ x: Math.cos(a) * r, y: th, z: Math.sin(a) * r, a: Math.atan2(Math.sin(a), Math.cos(a)), r, s: .4 + .6 * R(), ph: R() * 6.28 }); }
+const near = (ang, i) => { const d = Math.abs(((ST[i].a - ang + Math.PI * 3) % (Math.PI * 2)) - Math.PI); return d < .17 && ST[i].r > 150; };
+const LIT = ST.map((_, i) => NEEDS.findIndex(n => near(n.ang, i)));
+// ── 组网节点：智能体名取自现有系统对这条需求的真实匹配 ──
+const NODES = [
+  { id: 'n1', name: '发生了什么', role: '视频事件识别', p: [-330, -70, -90], cov: [0, 1], ring: 0 },
+  { id: 'n2', name: 'FireMind 智慧消防', role: '火灾预测预警 · 误报研判', p: [-40, -150, 50], cov: [2, 5, 10], ring: 1 },
+  { id: 'n3', name: 'AI安全卫士', role: '风险闭环处置 · 告警升级', p: [-30, 140, -60], cov: [3, 7], ring: 2 },
+  { id: 'n4', name: '消防Agent', role: '巡查记录 · 报备', p: [290, 10, 20], cov: [8], ring: 3 },
+  { id: 'n6', name: 'WGAI', role: '本地视觉分析', p: [-390, 205, 70], cov: [6], ring: 4 },
+  { id: 'n5', name: 'Thinglinks-IoT', role: '报警主机 · 设备数据接入', p: [-250, -230, 160], cov: [4], ring: 5, late: 1 },
+];
+const EDGES = [['n1', 'n2', 27.4], ['n1', 'n3', 27.9], ['n6', 'n1', 28.4], ['n2', 'n3', 28.9], ['n3', 'n4', 29.4], ['n2', 'n4', 29.9], ['n5', 'n2', 32.2]];
+const CONF = [29.6, 31.6];
+const RING = Array.from({ length: 18 }, (_, k) => { const pool = ST.map((_, i) => i).filter(i => LIT[i] >= 0); return { src: pool[Math.floor(rng(k + 5)() * pool.length)], ang: k / 18 * Math.PI * 2, out: k >= 6 && k % 2 === 0 ? (k % 4 ? '能力不符' : '测评未达标') : null, real: k < 6 ? k : -1, id: '#' + (1100 + k * 37) }; });
+const PH = [['需求入场', 0], ['检索星系', 2.5], ['按需召回', 8], ['验证报到', 15.5], ['组网推演', 26], ['生成方案', 35.5]];
+const LOGS = [[.4, '已签发需求 REQ · 0712-0001 · 11 项'], [3, '检索 3,000+ 智能体 · 40,000+ Skill'], [8.4, '按 11 项需求分头召回'], [13.5, '召回候选 126 个'], [16.5, '核验身份与测评等级'], [19.4, '保留 10 个 · 8 个能力不符或测评未达标'], [21, '等待你的偏好…'], [27, '开始组网：智能体逐个入网'], [29.7, '冲突：报警主机数据无法直接接入'], [31.7, '加入 Thinglinks-IoT 接管设备数据'], [35.6, '需求覆盖 10/11 · 周界安防建议二期'], [37.6, '组网方案已生成']];
+let t = 0, last = 0, speed = 1, pref = null;
+const ui = $('#ui'), mk = (cls, html) => { const e = document.createElement('div'); e.className = 'lab ' + cls; e.innerHTML = html; ui.appendChild(e); return e; };
+const put = (e, x, y, a, sc = 1, ax = -50, ay = -50) => { e.style.opacity = clamp(a); e.style.visibility = a > .01 ? 'visible' : 'hidden'; e.style.transform = `translate(${x}px,${y}px) translate(${ax}%,${ay}%) scale(${sc})`; };
+$('#phs').innerHTML = PH.map(([n]) => `<div class="ph"><i></i><b>${n}</b></div>`).join('');
+$('#nds').innerHTML = NEEDS.map(([n, g]) => `<div class="nd ${g ? 'g' : ''}"><i></i><span>${n}</span><small></small></div>`).join('');
+const beamEls = NEEDS.map(([n, g]) => mk('beam' + (g ? ' g' : ''), n));
+const whyEls = RING.map(r => mk('why', r.out || ''));
+const nodeEls = {}; NODES.forEach(n => { const e = mk('node', ''); e.dataset.id = n.id; nodeEls[n.id] = e; });
+const conflict = mk('conflict', '冲突 · 报警主机数据接不进来');
+function fillNode(n) { const tag = pref === 'local' && (n.id === 'n6' || n.id === 'n1') ? '支持本地部署' : pref === 'cheap' && n.id === 'n4' ? '按量计费' : pref === 'fast' && n.id === 'n2' ? '现成可用' : '';
+  nodeEls[n.id].innerHTML = `<small>${n.late ? '新增节点' : '入网 · ' + n.id.toUpperCase()}</small><b>${n.name}</b><span>${n.role}</span><div class="cv">${n.cov.map(c => `<em>${NEEDS[c][0]}</em>`).join('')}</div>${tag ? `<span class="tg">${tag}</span>` : ''}`; }
+NODES.forEach(fillNode);
+$$('#ask button').forEach(b => b.onclick = () => choose(b.dataset.v));
+function choose(v, auto) { if (pref) return; pref = v; $$('#ask button').forEach(b => b.classList.toggle('sel', b.dataset.v === v)); const label = { fast: '上线快', cheap: '成本低', local: '本地部署' }[v]; LOGS.push([t + .1, `偏好：${label}${auto ? '（默认）' : ''}`]); LOGS.sort((a, b) => a[0] - b[0]); NODES.forEach(fillNode); try { const r = JSON.parse(sessionStorage.getItem('si_run')||'{}'); r.preference=v; r.preferenceLabel=label; sessionStorage.setItem('si_run', JSON.stringify(r)); } catch(e){} }
+
+// ── 镜头：绕星系缓慢旋转，最后转正、压平 ──
+function cam() {
+  // 检索阶段一直绕星系转；组网开始时大摆臂转回正面，之后只轻轻摇摆；收拢时完全转正
+  const raw = t * .09 + .4, sway = .32 * Math.sin((t - 24) * .45), net = eio(seg(t, 24, 27.5)), fl = eio(seg(t, 34.5, 37.5));
+  const yaw = lerp(lerp(raw, sway, net), 0, fl);
+  return { yaw, pitch: lerp(lerp(.42, .32, seg(t, 8, 16)), 0, fl), dist: lerp(1500, 1050, eio(seg(t, 2, 9))) - eio(seg(t, 24, 28)) * 120 };
+}
+let C = cam();
+function proj(x, y, z) { const cy = Math.cos(C.yaw), sy = Math.sin(C.yaw), x1 = x * cy - z * sy, z1 = x * sy + z * cy, cp = Math.cos(C.pitch), sp = Math.sin(C.pitch), y2 = y * cp - z1 * sp, z2 = y * sp + z1 * cp, f = 900 / (z2 + C.dist); return [CX + x1 * f * 1.08, CY + y2 * f * 1.08, f, z2]; }
+function ringW(r, tt) { const k = eo(seg(tt, 15.5, 18.5)), s = ST[r.src], a = r.ang + tt * .05; return [lerp(s.x, Math.cos(a) * 250, k), lerp(s.y, 0, k), lerp(s.z, Math.sin(a) * 250, k)]; }
+function nodeW(n) { const r = RING[n.ring], from = ringW(r, Math.min(t, 26)), k = eo(seg(t, n.late ? 31.6 : 26.2, n.late ? 32.8 : 27.6)), fl = eio(seg(t, 34.5, 37.5));
+  return [lerp(from[0], n.p[0], k), lerp(from[1], n.p[1], k), lerp(from[2], n.p[2] * (1 - fl), k)]; }
+
+function render() {
+  C = cam(); ctx.fillStyle = '#05060A'; ctx.fillRect(0, 0, W, H); ctx.globalCompositeOperation = 'lighter';
+  const galA = seg(t, 2.2, 4.5) * (1 - .62 * seg(t, 24, 28)) * (1 - .5 * seg(t, 34.5, 37));
+  const wave = t > 3 && t < 7 ? eo(seg(t, 3, 6.5)) * 700 : -1;
+  for (let i = 0; i < N; i++) {
+    const s = ST[i], [x, y, f, z] = proj(s.x, s.y, s.z); if (z < -C.dist + 50) continue;
+    let a = galA * (.25 + .45 * s.s) * (.65 + .35 * Math.sin(t * 1.3 + s.ph)) * clamp(f * 1.1), col = '210,222,255';
+    if (wave > 0) a += Math.exp(-Math.abs(s.r - wave) / 26) * .8 * galA;
+    const b = LIT[i]; if (b >= 0) { const on = seg(t, 8.6 + b * .6, 9.3 + b * .6) * (1 - seg(t, 22, 26)); if (on > .05) { a += on * .7; col = NEEDS[b][1] ? '226,181,90' : '110,150,255'; } }
+    if (a < .02) continue; const r = (.5 + 1.3 * s.s) * f; ctx.fillStyle = `rgba(${col},${clamp(a)})`; ctx.fillRect(x - r, y - r, 2 * r, 2 * r);
+  }
+  // 核心
+  const o = proj(0, 0, 0), coreA = seg(t, 1.6, 3) * (1 - .7 * seg(t, 26, 29));
+  glow(o[0], o[1], 220 * o[2], '60,100,255', .45 * coreA); glow(o[0], o[1], 60 * o[2], '255,255,255', .9 * coreA);
+  for (let k = 0; k < 3; k++) { ctx.strokeStyle = `rgba(190,205,255,${(.5 - k * .13) * coreA})`; ctx.lineWidth = 1.1; ctx.beginPath(); ctx.ellipse(o[0], o[1], (46 + k * 16) * o[2] * 1.2, (46 + k * 16) * o[2] * .42, t * (.5 + k * .3) + k, 0, Math.PI * 2); ctx.stroke(); }
+  // 需求入场：11 束光从右侧清单汇入核心
+  NEEDS.forEach((n, k) => { const u = seg(t, .6 + k * .12, 1.8 + k * .12); if (u <= 0 || u >= 1) return; const x = lerp(1150, o[0], eio(u)), y = lerp(150 + k * 37, o[1], eio(u)); glow(x, y, 18, n[1] ? '226,181,90' : '110,150,255', .9 * (1 - u * .4)); });
+  // 召回光束
+  NEEDS.forEach((n, k) => { const g = eo(seg(t, 8.4 + k * .6, 9.4 + k * .6)), a = g * (1 - seg(t, 21, 24)); if (a <= 0) { put(beamEls[k], 0, 0, 0); return; }
+    const L = 200 + 300 * g, e = proj(Math.cos(n.ang) * L, 0, Math.sin(n.ang) * L), col = n[1] ? '226,181,90' : '110,150,255';
+    const gr = ctx.createLinearGradient(o[0], o[1], e[0], e[1]); gr.addColorStop(0, `rgba(${col},0)`); gr.addColorStop(1, `rgba(${col},${.7 * a})`); ctx.strokeStyle = gr; ctx.lineWidth = 1.6; ctx.beginPath(); ctx.moveTo(o[0], o[1]); ctx.lineTo(e[0], e[1]); ctx.stroke();
+    put(beamEls[k], e[0], e[1] - 14, a, clamp(e[2] * 1.1, .7, 1.1)); });
+  // 候选环
+  RING.forEach((r, k) => { const ap = seg(t, 15.5 + k * .05, 16.1 + k * .05); if (ap <= 0 || (r.real >= 0 && t > 26)) { whyEls[k].style.opacity = 0; r.al = 0; return; }
+    const out = r.out ? seg(t, 18.6 + (k % 5) * .3, 19.2 + (k % 5) * .3) : 0, fade = r.real < 0 && !r.out ? 1 - seg(t, 26, 27.5) : 1, a = ap * (1 - out * .85) * fade * (1 - seg(t, 34, 35));
+    const [x, y, f] = proj(...ringW(r, t)), ver = seg(t, 16.4 + k * .14, 16.8 + k * .14), col = r.out && out > .3 ? '255,107,94' : ver > .5 ? '226,181,90' : '110,150,255';
+    glow(x, y, 26 * f, col, .55 * a); ctx.fillStyle = `rgba(235,240,255,${a})`; ctx.save(); ctx.translate(x, y); ctx.rotate(Math.PI / 4); const sz = 5 * f; ctx.fillRect(-sz, -sz, 2 * sz, 2 * sz); ctx.restore();
+    if (t < 26) { ctx.strokeStyle = `rgba(${col},${.16 * a})`; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(o[0], o[1]); ctx.lineTo(x, y); ctx.stroke(); }
+    put(whyEls[k], x, y + 20, r.out ? Math.min(seg(t, 18.8 + (k % 5) * .3, 19.2 + (k % 5) * .3), 1 - seg(t, 22, 23)) : 0, 1, -50, 0); r.sx = x; r.sy = y; r.al = a; });
+  // 组网：3D 连线、冲突、数据流
+  const P = {}; NODES.forEach(n => P[n.id] = proj(...nodeW(n)));
+  EDGES.forEach(([a, b, t0], k) => { const g = eo(seg(t, t0, t0 + .9)); if (g <= 0) return;
+    const A = P[a], B = P[b], bad = a === 'n1' && b === 'n2' && t > CONF[0] && t < CONF[1]; if (a === 'n1' && b === 'n2' && t > CONF[1]) return;
+    const col = bad ? '255,107,94' : '120,150,255', ex = lerp(A[0], B[0], g), ey = lerp(A[1], B[1], g);
+    ctx.strokeStyle = `rgba(${col},${bad ? .5 + .4 * Math.sin(t * 30) : .55})`; ctx.lineWidth = 1.6 * Math.min(A[2], B[2]) * 1.1; ctx.setLineDash(bad ? [6, 6] : []); ctx.beginPath(); ctx.moveTo(A[0], A[1]); ctx.lineTo(ex, ey); ctx.stroke(); ctx.setLineDash([]);
+    if (t > t0 + .9 && !bad) for (let q = 0; q < 2; q++) { const u = ((t - t0) * .6 + q * .5 + k * .17) % 1; glow(lerp(A[0], B[0], u), lerp(A[1], B[1], u), 12, q ? '226,181,90' : '235,240,255', .9); } });
+  NODES.forEach(n => { const [x, y, f] = P[n.id], a = seg(t, n.late ? 31.6 : 26.2, n.late ? 32.2 : 26.8); glow(x, y, 50 * f, '77,123,255', .35 * a); });
+  ctx.globalCompositeOperation = 'source-over';
+  NODES.map(n => [n, P[n.id]]).sort((a, b) => b[1][3] - a[1][3]).forEach(([n, [x, y, f]], z) => { const e = nodeEls[n.id]; e.style.zIndex = 10 + z; put(e, x, y, seg(t, n.late ? 31.6 : 26.2, n.late ? 32.2 : 26.8), clamp(f * 1.12, .78, 1.15)); });
+  { const A = P.n1, B = P.n2; put(conflict, (A[0] + B[0]) / 2, (A[1] + B[1]) / 2 - 10, Math.min(seg(t, CONF[0], CONF[0] + .3), 1 - seg(t, CONF[1] - .2, CONF[1] + .2))); }
+  { const k = eio(seg(t, .1, 1.4)), sh = $('#sheet'); sh.style.opacity = 1 - seg(t, .9, 1.6); sh.style.transform = `scale(${1 - .95 * k})`; sh.style.display = t > 1.7 ? 'none' : 'block'; }
+  const covered = new Set(); NODES.forEach((n, i) => { const tt = n.late ? 32.8 : 27.6 + i * .5; if (t > tt) n.cov.forEach(c => covered.add(c)); });
+  $$('.nd').forEach((e, k) => { e.classList.toggle('in', t > .5 + k * .1); e.classList.toggle('match', t > 9 + k * .6 && !covered.has(k)); e.classList.toggle('cov', covered.has(k));
+    const gap = k === 9 && t > 35.5; e.classList.toggle('gap', gap); e.querySelector('small').textContent = covered.has(k) ? '已覆盖' : gap ? '建议二期' : ''; });
+  $('#cov').innerHTML = `${covered.size}<em> / 11</em>`;
+  $('#nA').innerHTML = t < 3 ? '—' : '3,000+<em>智能体</em>';
+  const cand = t < 9 ? null : t < 13.5 ? Math.round(lerp(3000, 126, eo(seg(t, 9, 13.5)))) : t < 18.6 ? 126 : t < 20 ? Math.round(lerp(126, 18, seg(t, 18.6, 20))) : t < 26 ? 18 : 10;
+  $('#nC').innerHTML = cand === null ? '—' : cand.toLocaleString(); $('#nN').innerHTML = t < 26.5 ? '—' : `${t > 32 ? 6 : 5}<em>个智能体</em>`;
+  $$('.ph').forEach((e, k) => { const a = PH[k][1], b = PH[k + 1] ? PH[k + 1][1] : 99; e.classList.toggle('on', t >= a && t < b); e.classList.toggle('done', t >= b); });
+  $('#log').innerHTML = LOGS.filter(l => l[0] <= t).slice(-3).map(l => `<div><b>00:${String(Math.floor(l[0])).padStart(2, '0')}</b>${l[1]}</div>`).join('');
+  $('#clk').textContent = `00:${String(Math.floor(t)).padStart(2, '0')}`;
+  const askOn = t > 20.5 && t < 26.6; $('#ask').classList.toggle('on', askOn); $('#askBar').style.width = seg(t, 20.5, 26.5) * 100 + '%'; if (t > 26.5 && !pref) choose('fast', true);
+  const settled = t >= 38 && covered.size >= 10;
+  $('#done').style.opacity = settled ? seg(t, 37, 37.8) : 0;
+  $('#cta').style.opacity = settled ? seg(t, 38, 38.8) : 0;
+  $('#cta').style.pointerEvents = settled ? 'auto' : 'none';
+  if (settled) { try { const r = JSON.parse(sessionStorage.getItem('si_run')||'{}'); r.coverage=covered.size; r.coverageTotal=11; r.matchDone=true; if(pref){r.preference=pref;r.preferenceLabel={fast:'上线快',cheap:'成本低',local:'本地部署'}[pref];} sessionStorage.setItem('si_run', JSON.stringify(r)); } catch(e){} }
+}
+function pop(x, y, k, n, d, s, out) { const p = $('#pop'); $('#pk').textContent = k; $('#pn').textContent = n; $('#pd').textContent = d; $('#ps').textContent = s; $('#ps').className = 'st' + (out ? ' out' : ''); p.style.display = 'block'; p.style.left = Math.min(x + 18, W - 310) + 'px'; p.style.top = Math.min(y - 10, H - 220) + 'px'; }
+$('#pop .x').onclick = () => $('#pop').style.display = 'none';
+ui.addEventListener('click', e => { const el = e.target.closest('.node'); if (!el) return; const n = NODES.find(x => x.id === el.dataset.id), a = $('#app').getBoundingClientRect(), s = a.width / W, r = el.getBoundingClientRect();
+  pop((r.right - a.left) / s, (r.top - a.top) / s, n.late ? '新增节点' : '已入网', n.name, `${n.role}。负责覆盖：${n.cov.map(c => NEEDS[c][0]).join('、')}。已通过平台测评。`, '已入网'); });
+cv.addEventListener('click', e => { const a = $('#app').getBoundingClientRect(), s = a.width / W, x = (e.clientX - a.left) / s, y = (e.clientY - a.top) / s;
+  const r = RING.find(r => r.al > .2 && Math.hypot(r.sx - x, r.sy - y) < 18); if (!r) { $('#pop').style.display = 'none'; return; }
+  if (r.real >= 0) { const n = NODES[r.real]; pop(x, y, '候选智能体', n.name, n.role + '。身份核验通过，等待组网。', '候选中'); }
+  else pop(x, y, '候选 ' + r.id, '候选 Agent ' + r.id, r.out ? '能力与需求不完全匹配，本轮未入选。' : '核验通过，作为备选保留。', r.out ? '未入选 · ' + r.out : '备选', !!r.out); });
+cv.style.cursor = 'pointer';
+$('#x2').onclick = () => { speed = speed === 1 ? 2 : 1; $('#x2').textContent = speed === 1 ? '×2 速' : '×1 速'; };
+const LOGS0 = LOGS.slice();
+$('#rp').onclick = () => { t = 0; pref = null; LOGS.splice(0, LOGS.length, ...LOGS0); NODES.forEach(fillNode); $$('#ask button').forEach(b => b.classList.remove('sel')); };
+function loop(now) { const dt = last ? (now - last) / 1000 : 0; last = now; if (t < END) t = Math.min(END, t + dt * speed); render(); requestAnimationFrame(loop); }
+function fit() { const s = Math.min(innerWidth / W, innerHeight / H), a = $('#app'); a.style.transform = `translate(${(innerWidth - W * s) / 2}px,${(innerHeight - H * s) / 2}px) scale(${s})`; }
+addEventListener('resize', fit); fit();
+document.fonts.ready.then(() => { window.__ready = true; const q = new URLSearchParams(location.search); if (q.has('t')) { t = +q.get('t'); if (q.get('pref')) choose(q.get('pref')); render(); } else requestAnimationFrame(loop); });
+window.UX && UX.init(3, 'dark');
+</script>
+</body>
+</html>

@@ -1,0 +1,21 @@
+测评组网系统 · 融合原型（清单补全 · 2026-11-09）
+
+全链路入口（推荐）：
+  http://127.0.0.1:9876/step1-领证.html
+  （不要带 ?demo=…；无参数打开 / 刷新 = 从注册开场）
+  页脚「↻ 重新开始」会清空 sessionStorage（si_profile、si_run）并回到无参数开场。
+
+本地服务：本目录 python3 -m http.server 9876
+（勿用 8765；勿直接双击 html）
+
+链路：登录/注册 → 工作台或提需求 → 完善（城运）→ 组网三态 → 方案
+样例：城运保留；教育（2任务·5视角）对齐高雨晴清单附录。Prototype 模拟，未接真实后端。
+
+演示快捷（刷新会停在对应幕，不是全链路）：
+  ?demo=workbench  工作台
+  ?demo=edu        教育需求
+  ?demo=edu-match / edu-partial / edu-fail  组网三态
+  ?demo=enrich     完善信息
+  ?demo=match&t=39 城运匹配结果
+
+详见 CHECKLIST-FILL-NOTES.md

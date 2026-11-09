@@ -1,0 +1,199 @@
+/* 融合原型 · 统一顶栏 */
+@font-face{font-family:"NR";src:url(fonts/newsreader-400.woff2) format("woff2");font-weight:400}
+@font-face{font-family:"NSerif";src:url(fonts/noto-serif-sc-400.woff2) format("woff2");font-weight:400}
+@font-face{font-family:"NSerif";src:url(fonts/noto-serif-sc-600.woff2) format("woff2");font-weight:600}
+@font-face{font-family:"NSans";src:url(fonts/NotoSansSC-var.ttf) format("truetype");font-weight:100 900}
+@font-face{font-family:"JBM";src:url(fonts/JetBrainsMono-var.ttf) format("truetype");font-weight:100 800}
+
+#ux-chrome{
+  position:absolute;left:0;right:0;top:0;height:64px;z-index:90;
+  display:flex;align-items:center;justify-content:space-between;padding:0 32px;
+  font-family:NSans,"PingFang SC","Microsoft YaHei",system-ui,sans-serif;
+  transition:background .45s,border-color .45s,color .45s,opacity .4s,transform .45s;
+  pointer-events:none;
+}
+#ux-chrome *{pointer-events:auto}
+#ux-chrome .ux-brand{
+  display:flex;align-items:center;gap:12px;
+  font:600 16px NSerif,"PingFang SC",serif;letter-spacing:.1em;
+}
+#ux-chrome .ux-brand img{height:20px}
+#ux-chrome .ux-brand small{
+  font:500 10.5px JBM,monospace;letter-spacing:.26em;opacity:.55;margin-left:2px;
+}
+#ux-chrome .ux-rail{
+  display:flex;align-items:center;gap:8px;
+  font:400 13px NSans,"PingFang SC",sans-serif;
+}
+#ux-chrome .ux-rail .s{
+  display:flex;align-items:center;gap:6px;padding:6px 4px;position:relative;
+  opacity:.42;transition:opacity .3s,color .3s;
+}
+#ux-chrome .ux-rail .s i{
+  font:500 11px JBM,monospace;font-style:normal;letter-spacing:.06em;
+}
+#ux-chrome .ux-rail .s.on{opacity:1;font-weight:500}
+#ux-chrome .ux-rail .s.on::after{
+  content:"";position:absolute;left:0;right:0;bottom:-18px;height:2px;border-radius:1px;
+}
+#ux-chrome .ux-rail .s.done{opacity:.72}
+#ux-chrome .ux-rail .sep{opacity:.28;padding:0 2px;font-size:12px}
+#ux-chrome .ux-chip{
+  display:none;align-items:center;gap:10px;
+  padding:5px 14px 5px 5px;border-radius:999px;
+}
+#ux-chrome .ux-chip.on{display:flex;animation:uxPop .55s cubic-bezier(.2,1.4,.4,1)}
+@keyframes uxPop{0%{transform:scale(.5);opacity:0}100%{transform:scale(1);opacity:1}}
+#ux-chrome .ux-si{
+  display:inline-grid;place-items:center;width:28px;height:33px;
+  background:linear-gradient(160deg,#1543F2,#071B7A);color:#fff;
+  font:400 16px NR,Georgia,serif;border-radius:3px;position:relative;flex:none;
+}
+#ux-chrome .ux-si::before{
+  content:"14";position:absolute;left:3px;top:1px;font:500 6px JBM,monospace;
+}
+#ux-chrome .ux-chip b{display:block;font:500 13px NSans,"PingFang SC",sans-serif}
+#ux-chrome .ux-chip span{display:block;font:500 10px JBM,monospace;letter-spacing:.14em;opacity:.65}
+
+/* 暗色主题（领证后 / 组网） */
+#ux-chrome.theme-dark{
+  background:rgba(6,8,14,.78);backdrop-filter:blur(10px);
+  border-bottom:1px solid rgba(255,255,255,.12);color:#ECEAE4;
+}
+#ux-chrome.theme-dark .ux-brand img{filter:brightness(1.35)}
+#ux-chrome.theme-dark .ux-rail .s.on::after{background:#ECEAE4}
+#ux-chrome.theme-dark .ux-chip{
+  border:1px solid rgba(255,255,255,.14);background:rgba(12,15,24,.85);
+}
+
+/* 浅色主题（提需求 / 方案） */
+#ux-chrome.theme-light{
+  background:rgba(243,241,236,.94);backdrop-filter:blur(8px);
+  border-bottom:1px solid #E3E0D8;color:#15171C;
+}
+#ux-chrome.theme-light .ux-brand img{filter:none}
+#ux-chrome.theme-light .ux-rail .s.on::after{background:#15171C}
+#ux-chrome.theme-light .ux-chip{
+  border:1px solid #E3E0D8;background:#FBFAF7;
+}
+
+/* 领证前：仅 logo，弱化 */
+#ux-chrome.pre{
+  background:transparent;border-bottom-color:transparent;backdrop-filter:none;
+}
+#ux-chrome.pre .ux-rail,#ux-chrome.pre .ux-chip{visibility:hidden;opacity:0}
+
+/* 桥接幕 */
+#ux-bridge{
+  position:fixed;inset:0;z-index:200;display:none;
+  background:#06070A;color:#ECEAE4;
+  font-family:NSans,"PingFang SC","Microsoft YaHei",system-ui,sans-serif;
+  align-items:center;justify-content:center;flex-direction:column;text-align:center;
+}
+#ux-bridge.on{display:flex}
+#ux-bridge .stars{
+  position:absolute;inset:0;overflow:hidden;opacity:.9;pointer-events:none;
+}
+#ux-bridge .stars canvas{width:100%;height:100%;display:block}
+#ux-bridge .card{
+  position:relative;z-index:2;padding:36px 48px;border-radius:18px;
+  border:1px solid rgba(255,255,255,.14);
+  background:rgba(14,17,26,.72);backdrop-filter:blur(8px);
+  box-shadow:0 30px 80px rgba(0,0,0,.45);
+  opacity:0;transform:translateY(16px);transition:all .7s cubic-bezier(.2,.8,.2,1);
+}
+#ux-bridge.show .card{opacity:1;transform:none}
+#ux-bridge .k{
+  font:500 11px JBM,monospace;letter-spacing:.34em;color:#6F93FF;margin-bottom:16px;
+}
+#ux-bridge h2{
+  margin:0;font:600 34px/1.35 NSerif,"PingFang SC",serif;letter-spacing:.12em;
+}
+#ux-bridge p{
+  margin:14px 0 0;font:400 15px NSans,"PingFang SC",sans-serif;
+  color:rgba(236,234,228,.62);letter-spacing:.04em;
+}
+#ux-bridge .barline{
+  width:180px;height:2px;margin:28px auto 0;background:rgba(255,255,255,.1);border-radius:2px;overflow:hidden;
+}
+#ux-bridge .barline i{
+  display:block;height:100%;width:0;background:linear-gradient(90deg,#1543F2,#6F93FF);
+  transition:width 1.4s cubic-bezier(.2,.8,.2,1);
+}
+#ux-bridge.show .barline i{width:100%}
+#ux-bridge.fade{opacity:0;transition:opacity .55s}
+
+
+/* 隐藏各页自带顶栏，改由 #ux-chrome 接管（step4 保留右侧操作钮） */
+.ux-unified #app > .bar { display:none !important; }
+body.ux-unified > .bar {
+  display:flex !important; justify-content:flex-end; align-items:center;
+  position:fixed; top:0; right:0; left:auto; height:64px; width:auto;
+  padding:0 28px 0 0; background:transparent !important; border:0 !important;
+  backdrop-filter:none !important; z-index:95; pointer-events:none;
+}
+body.ux-unified > .bar .brand,
+body.ux-unified > .bar .steps { display:none !important; }
+body.ux-unified > .bar .acts { pointer-events:auto; margin-right:0; }
+/* chip 给操作钮让位：step4 时 chrome 右侧留空 */
+#ux-chrome.with-acts .ux-chip { margin-right: 340px; }
+.ux-unified .top .brand { opacity:0; pointer-events:none; }
+.ux-unified .top .chipme { display:none !important; }
+.ux-unified .hd b { opacity:0; height:0; overflow:hidden; }
+.ux-unified .hd small { margin-top:0; }
+
+/* step3：给统一顶栏让位 */
+.ux-unified .hd { top: 78px; }
+.ux-unified .clock { top: 80px; }
+.ux-unified .tr { top: 74px; }
+.ux-unified .left { top: 170px; }
+.ux-unified .needs { top: 160px; }
+.ux-unified #done { top: 140px; }
+
+/* step4：chrome 吸顶 */
+#ux-chrome.sticky {
+  position:sticky; top:0; left:0; right:0; width:100%;
+}
+
+
+/* 桥接幕已退役 */
+#ux-bridge{display:none!important}
+#app.demand-mode #ux-chrome{z-index:70}
+
+
+/* 方案同页幕：chrome 挂在 body，随文档吸顶 */
+body.scheme-live #ux-chrome{
+  position:fixed; top:0; left:0; right:0; width:100%; z-index:98;
+}
+body.scheme-live #ux-chrome.with-acts .ux-chip{ margin-right:340px; }
+body.match-live #app.demand-mode{ /* noop */ }
+#app.match-mode #ux-chrome{z-index:70}
+#app.enrich-mode #ux-chrome{z-index:70}
+body.enrich-live #ux-chrome{z-index:70}
+
+
+/* 全链路入口 / demo 快捷提示 */
+.demo.demo-shortcut{z-index:120;max-width:min(920px,92vw);line-height:1.55}
+.demo .demo-tip, #fullchainBar .demo-tip{
+  display:inline-block;margin-right:10px;padding:3px 8px;border-radius:6px;
+  background:rgba(233,180,76,.18);color:#E9B44C;font:500 11.5px NSans,"PingFang SC",sans-serif;
+  border:1px solid rgba(233,180,76,.35);
+}
+.demo .demo-tip + a, #fullchainBar a[data-restart]{
+  color:#9DB5FF !important;font-weight:600;
+}
+#fullchainBar{
+  position:fixed;left:16px;right:16px;bottom:14px;z-index:9999;
+  display:flex;flex-wrap:wrap;align-items:center;gap:10px;
+  padding:10px 14px;border-radius:12px;
+  background:rgba(8,10,16,.92);backdrop-filter:blur(10px);
+  border:1px solid rgba(233,180,76,.4);
+  box-shadow:0 10px 40px rgba(0,0,0,.45);
+  font:400 12px NSans,"PingFang SC",sans-serif;color:rgba(236,234,228,.7);
+  pointer-events:auto;
+}
+#fullchainBar a{
+  color:rgba(236,234,228,.75);text-decoration:none;margin-left:2px;
+}
+#fullchainBar a[data-restart]{color:#9DB5FF;font-weight:600}
+#fullchainBar code{font:500 11px JBM,monospace;color:#E9B44C}
