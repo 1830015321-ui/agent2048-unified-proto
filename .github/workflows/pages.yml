@@ -1,0 +1,42 @@
+name: Publish GitHub Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Enable Pages from main root
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          repo="${{ github.repository }}"
+          if gh api "repos/${repo}/pages" > /tmp/pages.json 2>/tmp/pages.err; then
+            echo "Pages site already exists"
+            cat /tmp/pages.json
+          else
+            echo "Pages site missing; creating legacy source main:/"
+            cat /tmp/pages.err || true
+            gh api --method POST "repos/${repo}/pages" --input - <<'EOF'
+          {
+            "build_type": "legacy",
+            "source": {
+              "branch": "main",
+              "path": "/"
+            }
+          }
+          EOF
+          fi
+          echo "Requesting a Pages build"
+          gh api --method POST "repos/${repo}/pages/builds" > /tmp/build.json
+          cat /tmp/build.json
+          gh api "repos/${repo}/pages"
