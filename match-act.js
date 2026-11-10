@@ -62,10 +62,10 @@ const RING = Array.from({ length: 18 }, (_, k) => {
   const pool = ST.map((_, i) => i).filter(i => LIT[i] >= 0);
   return { src: pool[Math.floor(rng(k + 5)() * pool.length)] || 0, ang: k / 18 * Math.PI * 2, out: k >= 7 && k % 2 === 0 ? (k % 4 ? '能力不符' : '测评未达标') : null, real: k < 7 ? k : -1, id: '#' + (2100 + k * 37) };
 });
-const PH = [['需求入场', 0], ['检索星系', 2.5], ['按环节召回', 8], ['验证报到', 15.5], ['双方案组网', 26], ['生成方案', 35.5]];
+const PH = [['需求入场', 0], ['检索技能库', 2.5], ['查找候选技能', 8], ['匹配候选智能体', 15.5], ['按使用对象组网', 26], ['生成方案', 35.5]];
 const LOGS = [
   [.4, '已确认需求 · 城运视频识别 · 1 个任务'],
-  [3, '检索 3,000+ 智能体 · 40,000+ Skill'],
+  [3, '检索 2,898 个智能体 · 7,111 项技能'],
   [8.4, '按城运中心 7 环节分头召回'],
   [13.5, '召回候选 186 个'],
   [16.5, '核验身份与测评等级'],
@@ -73,7 +73,7 @@ const LOGS = [
   [21, '等待你的偏好…'],
   [27, '方案 A 城运中心视角：环节逐个入网'],
   [29.9, '方案 B：违规行为整治 · 系统补充 3 Agent'],
-  [31.9, '旁路接入：数据隐私保护（脱敏 · 等保）'],
+  [31.9, '旁路接入 · 数据隐私保护（脱敏）'],
   [35.6, '匹配完成 · A 7/7·26 Agent / B 4/5·13 Agent'],
   [37.6, '双方案已生成 · 共 26+13 Agent · 画布口径'],
 ];
@@ -336,14 +336,16 @@ function render() {
   // 覆盖口径：动画中显示 A 环节，收束后显示双方案
   if (t >= 35.5) $('#mCov').innerHTML = `11<em>/12</em>`;
   else $('#mCov').innerHTML = `${covered.size}<em> / 7</em>`;
-  $('#mNA').innerHTML = t < 3 ? '—' : '3,000+<em>智能体</em>';
-  const cand = t < 9 ? null : t < 13.5 ? Math.round(lerp(3000, 186, eo(seg(t, 9, 13.5)))) : t < 18.6 ? 186 : t < 20 ? Math.round(lerp(186, 48, seg(t, 18.6, 20))) : t < 26 ? 48 : 37;
-  $('#mNC').innerHTML = cand === null ? '—' : cand.toLocaleString();
-  $('#mNN').innerHTML = t < 26.5 ? '—' : (t > 35.5 ? `39<em>Agent</em>` : (t > 32 ? `26+13<em>双视角</em>` : `26<em>方案A</em>`));
+  const libA = $('#mNA'), libS = $('#mNS'), libSnap = $('#mSnap');
+  if (libA) libA.innerHTML = '2,898 <em>个智能体</em>';
+  if (libS) libS.textContent = '7,111 项技能';
+  if (libSnap) libSnap.textContent = '2026-11-10 数据快照';
   $$('.ph').forEach((e, k) => { const a = PH[k][1], b = PH[k + 1] ? PH[k + 1][1] : 99; e.classList.toggle('on', t >= a && t < b); e.classList.toggle('done', t >= b); });
   $('#mLog').innerHTML = LOGS.filter(l => l[0] <= t).slice(-3).map(l => `<div><b>00:${String(Math.floor(l[0])).padStart(2, '0')}</b>${l[1]}</div>`).join('');
   $('#mClk').textContent = `00:${String(Math.floor(t)).padStart(2, '0')}`;
   const askOn = t > 20.5 && t < 26.6; $('#mAsk').classList.toggle('on', askOn); $('#mAskBar').style.width = seg(t, 20.5, 26.5) * 100 + '%';
+  const slogan = $('#mSlogan');
+  if (slogan) slogan.style.opacity = (askOn || t >= 36.5) ? 0 : 1;
   if (t > 26.5 && !pref) { const r = (window.UX && UX.readRun && UX.readRun()) || {}; choose(r.preferenceSeed || r.preference || 'local', true); }
 
   const settled = t >= 38 && covered.size >= 7;

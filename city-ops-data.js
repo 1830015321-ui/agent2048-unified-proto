@@ -13,6 +13,9 @@ window.CITY_OPS = {
   ],
   "agentsTotal": 39,
   "skillsTotal": 36,
+  "libraryAgents": 2898,
+  "librarySkills": 7111,
+  "librarySnapshot": "2026-11-10 数据快照",
   "agentsLabel": "26+13 Agent",
   "schemes": [
     {

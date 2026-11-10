@@ -77,19 +77,18 @@
       const login = document.createElement('div');
       login.id = 'loginAct';
       login.innerHTML = `
-        <div class="lp">
-          <div class="tabs">
-            <button type="button" class="on" data-mode="login">已有账号登录</button>
-            <button type="button" data-mode="register">新用户注册</button>
-          </div>
-          <h2 id="lgTitle">登录</h2>
-          <p class="sub" id="lgSub">已有用户登录后进入工作台，可查看历史需求与组网结果（Prototype 模拟）。</p>
-          <div class="f"><label>姓名 / 账号<em>演示任意填写</em></label><input id="lgName" placeholder="例：邓义" value="邓义"></div>
-          <div class="f" id="lgOrgWrap" hidden><label>所在机构<em>注册时填写</em></label><input id="lgOrg" placeholder="例：某市教育局 / 某中学"></div>
-          <div class="f" id="lgRoleWrap" hidden><label>岗位<em>注册时填写</em></label><input id="lgRole" placeholder="例：信息化负责人"></div>
-          <button class="sign" id="lgSubmit">进入工作台</button>
-          <p class="hint">Prototype 不接入真实账号认证。新用户注册后进入需求收集；已有用户进入历史工作台。</p>
-          <button type="button" class="back" id="lgBack">← 返回开场</button>
+        <div class="lp" role="dialog" aria-modal="true" aria-labelledby="lgTitle">
+          <div class="lg-mark"><img src="mark.png" alt=""><b>测评组网系统<small>SKILL INDEX</small></b></div>
+          <div class="kick" id="lgKick">SIGN IN</div>
+          <h2 id="lgTitle">登录你的账号</h2>
+          <p class="sub" id="lgSub">继续未完成的需求与组网</p>
+          <div class="f" id="lgEmailWrap"><label for="lgEmail">邮箱</label><input id="lgEmail" type="email" placeholder="name@organization.com" autocomplete="username"></div>
+          <div class="f" id="lgNameWrap" hidden><label for="lgName">姓名</label><input id="lgName" placeholder="例：邓义" value="邓义" autocomplete="name"></div>
+          <div class="f" id="lgOrgWrap" hidden><label for="lgOrg">所在机构</label><input id="lgOrg" placeholder="例：某市教育局 / 某中学"></div>
+          <div class="f" id="lgRoleWrap" hidden><label for="lgRole">岗位</label><input id="lgRole" placeholder="例：信息化负责人"></div>
+          <button class="sign" id="lgSubmit">登录</button>
+          <p class="switch" id="lgSwitch">还没有账号？<button type="button" id="lgGoReg">注册</button></p>
+          <button type="button" class="back" id="lgBack">返回开场</button>
         </div>`;
       document.body.appendChild(login);
     }
@@ -115,28 +114,71 @@
     }
   }
 
+  let loginArriving = false;
+
   function showLogin(mode) {
     ensureLayers();
     const el = document.getElementById('loginAct');
-    el.classList.add('on');
+    const wb = document.getElementById('workbenchAct');
+    if (wb) wb.classList.remove('on');
     setLoginMode(mode || 'login');
-    document.getElementById('workbenchAct').classList.remove('on');
+    if (el.classList.contains('on') || loginArriving) return;
+    loginArriving = true;
+    const issue = document.getElementById('issue');
+    if (issue) issue.classList.remove('on');
+    const reveal = () => {
+      const welcome = document.getElementById('welcome');
+      if (welcome) welcome.classList.add('login-up');
+      requestAnimationFrame(() => {
+        el.classList.add('on');
+        loginArriving = false;
+        const focusId = el.dataset.mode === 'register' ? 'lgName' : 'lgEmail';
+        const focusEl = document.getElementById(focusId);
+        if (focusEl) setTimeout(() => focusEl.focus(), 40);
+      });
+    };
+    const go = window.__arriveWelcome
+      ? window.__arriveWelcome()
+      : Promise.resolve();
+    Promise.resolve(go).then(() => new Promise(r => setTimeout(r, 280))).then(reveal).catch(() => {
+      reveal();
+    });
   }
 
-  function hideLogin() { const el = document.getElementById('loginAct'); if (el) el.classList.remove('on'); }
+  function hideLogin() {
+    const el = document.getElementById('loginAct');
+    if (el) el.classList.remove('on');
+    const welcome = document.getElementById('welcome');
+    if (welcome) welcome.classList.remove('login-up');
+    if (window.__unlockOpeningScroll) window.__unlockOpeningScroll();
+  }
 
   function setLoginMode(mode) {
     const login = document.getElementById('loginAct');
-    login.querySelectorAll('.tabs button').forEach(b => b.classList.toggle('on', b.dataset.mode === mode));
     const reg = mode === 'register';
-    document.getElementById('lgTitle').textContent = reg ? '注册账号' : '登录';
+    const kick = document.getElementById('lgKick');
+    if (kick) kick.textContent = reg ? 'CREATE ACCOUNT' : 'SIGN IN';
+    document.getElementById('lgTitle').textContent = reg ? '创建你的账号' : '登录你的账号';
     document.getElementById('lgSub').textContent = reg
-      ? '新用户注册完成后进入需求收集页面（Prototype 模拟）。'
-      : '已有用户登录后进入工作台，可查看历史需求与组网结果（Prototype 模拟）。';
+      ? '填写基本信息，便于更准确地匹配智能体'
+      : '继续未完成的需求与组网';
+    document.getElementById('lgEmailWrap').hidden = !!reg;
+    document.getElementById('lgNameWrap').hidden = !reg;
     document.getElementById('lgOrgWrap').hidden = !reg;
     document.getElementById('lgRoleWrap').hidden = !reg;
-    document.getElementById('lgSubmit').textContent = reg ? '完成注册并提需求' : '进入工作台';
+    document.getElementById('lgSubmit').textContent = reg ? '注册并开始' : '登录';
+    const sw = document.getElementById('lgSwitch');
+    if (sw) sw.innerHTML = reg
+      ? '已有账号？<button type="button" id="lgGoLogin">登录</button>'
+      : '还没有账号？<button type="button" id="lgGoReg">注册</button>';
+    const goReg = document.getElementById('lgGoReg');
+    const goLogin = document.getElementById('lgGoLogin');
+    if (goReg) goReg.onclick = () => setLoginMode('register');
+    if (goLogin) goLogin.onclick = () => setLoginMode('login');
     login.dataset.mode = mode;
+    const focusId = reg ? 'lgName' : 'lgEmail';
+    const focusEl = document.getElementById(focusId);
+    if (focusEl) setTimeout(() => focusEl.focus(), 40);
   }
 
   function renderWorkbench() {
@@ -835,15 +877,19 @@
   function wireLogin() {
     ensureLayers();
     const login = document.getElementById('loginAct');
-    login.querySelectorAll('.tabs button').forEach(b => b.onclick = () => setLoginMode(b.dataset.mode));
+    login.addEventListener('click', e => { if (e.target === login) hideLogin(); });
     document.getElementById('lgBack').onclick = () => { hideLogin(); };
+    const goReg = document.getElementById('lgGoReg');
+    if (goReg) goReg.onclick = () => setLoginMode('register');
     document.getElementById('lgSubmit').onclick = () => {
       const mode = login.dataset.mode || 'login';
-      const name = (document.getElementById('lgName').value || '邓义').trim();
+      const email = (document.getElementById('lgEmail').value || '').trim();
+      const nameFromEmail = email.includes('@') ? email.split('@')[0] : '';
+      const name = (document.getElementById('lgName').value || nameFromEmail || '邓义').trim();
       const org = (document.getElementById('lgOrg').value || '').trim();
       const role = (document.getElementById('lgRole').value || '').trim();
       if (window.UX && UX.setRegistered) {
-        UX.setRegistered({ name, org: org || (mode === 'login' ? '已登录用户' : ''), role: role || (mode === 'login' ? '成员' : '') });
+        UX.setRegistered({ name, email, org: org || (mode === 'login' ? '已登录用户' : ''), role: role || (mode === 'login' ? '成员' : '') });
       }
       hideLogin();
       if (mode === 'register') {
@@ -899,6 +945,20 @@
       if (window.UX && UX.setRegistered) UX.setRegistered({ name: '邓义', org: '演示机构', role: '产品' });
       showWorkbench();
     }, 200);
+    if (demo === 'login' || demo === 'register') {
+      const go = () => showLogin(demo === 'register' ? 'register' : 'login');
+      const waitReady = () => {
+        if (window.__ready) setTimeout(go, 240);
+        else {
+          let n = 0;
+          const t = setInterval(() => {
+            n += 1;
+            if (window.__ready || n > 40) { clearInterval(t); go(); }
+          }, 80);
+        }
+      };
+      waitReady();
+    }
     if (demo === 'edu') setTimeout(() => bootEducationDemand({ autoSend: true }), 500);
     if (demo === 'edu-match') setTimeout(() => bootEducationDemand({ autoConfirm: true, outcome: q.get('out') || 'success', skipToMatch: true, instant: true }), 300);
     if (demo === 'edu-partial') setTimeout(() => bootEducationDemand({ autoConfirm: true, outcome: 'partial', skipToMatch: true, instant: true }), 300);

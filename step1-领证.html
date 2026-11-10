@@ -311,13 +311,13 @@ button{font:inherit;cursor:pointer}
     <div class="line" id="l1" data-n="01 / 04 · 工业时代">工业时代，机器成为新的劳动力。</div>
     <div class="line" id="l2" data-n="02 / 04 · 智能时代">智能时代，<b>百亿级智能体</b>正在成为新的数字生产力。</div>
     <div class="line" id="l3" data-n="03 / 04 · 秩序">它们需要被验证、被找到、被组织起来。</div>
-    <div class="line" id="l4" data-n="04 / 04"><b>3,000+</b> 智能体，已各就其位。</div>
+    <div class="line" id="l4" data-n="04 / 04"><b>2,898</b> 个智能体，已各就其位。</div>
   </div>
 
   <!-- 2 欢迎加入 -->
   <div class="layer" id="welcome">
     <div class="hero2"><div class="kick" id="kick">JOIN THE NETWORK</div><h1 id="wt">你提需求，我来组织</h1>
-      <p>今天，已有 <b>3,000+</b> 智能体 · <b>40,000+</b> Skill 在网络中</p></div>
+      <p>今天，已有 <b>2,898</b> 个智能体 · <b>7,111</b> 项技能 在网络中</p></div>
     <div class="ctaw"><button class="cta" id="open">注册账号，开始使用<small>约 30 秒</small></button>
       <div class="calm2">说清场景里的问题，平台帮你匹配智能体，组出可落地的方案</div></div>
   </div>
@@ -561,8 +561,32 @@ button{font:inherit;cursor:pointer}
     <div class="clock">已用时 <b id="mClk">00:00</b></div>
     <div class="tr p"><button>收起，好了通知我</button></div>
     <div class="left"><div class="lt">进度</div><div id="mPhs"></div>
-      <div class="num"><div><small>检索范围</small><b id="mNA">—</b></div><div><small>候选智能体</small><b id="mNC">—</b></div><div><small>入网</small><b id="mNN">—</b></div></div></div>
+      <div class="num" id="mStats">
+        <div class="lib">
+          <small>检索范围</small>
+          <b id="mNA">2,898 <em>个智能体</em></b>
+          <p class="sk" id="mNS">7,111 项技能</p>
+          <p class="snap" id="mSnap">2026-11-10 数据快照</p>
+        </div>
+        <div>
+          <small>候选技能</small>
+          <b class="na">未统计</b>
+          <p class="hint">先找到相关技能 · 演示</p>
+        </div>
+        <div>
+          <small>候选智能体</small>
+          <b class="na">未统计</b>
+          <p class="hint">按技能找到所属智能体 · 去重</p>
+        </div>
+        <div>
+          <small>方案采用的智能体</small>
+          <b class="na">—</b>
+          <p class="hint">筛选技能后汇总 · 跨方案去重</p>
+        </div>
+        <p class="note">候选和方案数量为演示，尚未接入实时组网结果。</p>
+      </div></div>
     <div class="needs"><div class="t"><span>城运环节</span><b id="mCov">0<em> / 7</em></b></div><div id="mNds"></div></div>
+    <div id="mSlogan"><b>从理解需求，到连接能力</b><p>以真实业务需求为起点，构建更贴合目标的智能协作网络。</p></div>
     <div class="log" id="mLog"></div>
     <div id="mAsk"><h4>你更看重哪一点？</h4><p>选一个，网络会按它调整 · 6 秒不选按「政务云」</p><div class="o"><button data-v="fast">上线快</button><button data-v="cheap">成本低</button><button data-v="local">政务云</button></div><div class="bar"><i id="mAskBar"></i></div></div>
     <div id="mPop"><button type="button" class="x" aria-label="关闭">×</button>
@@ -921,7 +945,7 @@ function ui() {
   LINES.forEach((id, j) => { const e = $(id), v = vis(j + .55, j + 1.62); e.style.opacity = v; e.style.transform = `translateY(${(1 - v) * 10}px)`; e.classList.remove('on', 'off');
     const cs = e._cs || (e._cs = [...e.querySelectorAll('.c')]), lit = clamp((Q - (j + .6)) / .55) * cs.length; cs.forEach((c, n) => c.classList.toggle('on', n < lit)); });
   const od = $('#odo'); const ov = vis(1.62, 2.62); od.style.opacity = ov; const fut = Q > 2.05; od.classList.toggle('future', fut);
-  $('#olab').textContent = fut ? '未来 · 数字生产力' : '今天 · 网络中的智能体'; odoSet(Q < 1.75 ? '0' : fut ? '10,000,000,000' : '3,000');
+  $('#olab').textContent = fut ? '未来 · 数字生产力' : '今天 · 网络中的智能体'; odoSet(Q < 1.75 ? '0' : fut ? '10,000,000,000' : '2,898');
   const w = Q > 4.75; if (w !== shownWelcome && !issuing) { shownWelcome = w; show(w ? 'welcome' : 'story'); if (w) { try { buildSpec(); } catch (e) { console.warn('buildSpec', e); } } }
   const textOn = shownWelcome && !$('#after').classList.contains('on'), tn = now();
   if (textOn && welcomeAt < 0) { welcomeAt = tn; offAt = -1; } else if (!textOn && welcomeAt >= 0) { welcomeAt = -1; offAt = tn; }
@@ -966,12 +990,61 @@ function fitCard(el, w) { el.style.transform = `scale(${w / 600})`; }
 
 // ── 流程 ──
 const show = id => document.querySelectorAll('.layer').forEach(l => l.classList.toggle('on', [].concat(id).includes(l.id)));
+// 先过渡到「你提需求，我来组织」星图幕，再交给登录层淡入
+window.__arriveWelcome = function () {
+  const target = innerHeight * 5.2;
+  const start = scrollY;
+  const dist = target - start;
+  const already = Math.abs(dist) < 24 && (shownWelcome || Q > 4.75);
+  const block = e => { e.preventDefault(); };
+  document.addEventListener('wheel', block, { passive: false });
+  document.addEventListener('touchmove', block, { passive: false });
+  const unbindNav = () => {
+    document.removeEventListener('wheel', block, { passive: false });
+    document.removeEventListener('touchmove', block, { passive: false });
+  };
+  return new Promise(function (resolve) {
+    function settle() {
+      scrollTo(0, target);
+      Q = 5.2;
+      shownWelcome = true;
+      issuing = true;
+      show('welcome');
+      const w = $('#welcome');
+      if (w) w.classList.add('on', 'ready');
+      const t0 = performance.now();
+      (function check() {
+        const crys = $('#wt') && $('#wt').classList.contains('crys');
+        if (crys || performance.now() - t0 > 2000) {
+          document.documentElement.style.overflow = 'hidden';
+          document.body.style.overflow = 'hidden';
+          unbindNav();
+          resolve();
+        } else requestAnimationFrame(check);
+      })();
+    }
+    if (already) { settle(); return; }
+    const duration = Math.max(700, Math.min(1700, Math.abs(dist) / Math.max(innerHeight, 1) * 360));
+    const t0 = performance.now();
+    const ease = t => t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+    (function step(now) {
+      const p = Math.min(1, (now - t0) / duration);
+      const y = start + dist * ease(p);
+      scrollTo(0, y);
+      Q = clamp(y / innerHeight, 0, 5.2);
+      if (p < 1) requestAnimationFrame(step);
+      else settle();
+    })(t0);
+  });
+};
+window.__unlockOpeningScroll = function () {
+  document.documentElement.style.overflow = '';
+  document.body.style.overflow = '';
+  issuing = false;
+};
+
 $('#skip').onclick = () => {
-  issuing = true; shownWelcome = true;
-  scrollTo({ top: innerHeight * 5.2, behavior: 'auto' });
-  show(['welcome', 'issue']);
-  try { update(); } catch (e) {}
-  setTimeout(() => { const n = $('#fName'); if (n) n.focus(); }, 200);
+  if (window.ChecklistProto) ChecklistProto.showLogin('register');
 };
 if (INVITE) { const k = $('#kick'); k.className = 'kick inv'; k.textContent = '陈思远 邀请你加入 · 全球数源中心已有 3 位同事在网络中'; $('#fOrg').value = '全球数源中心（广州南沙）有限公司'; }
 function buildSpec() {
@@ -980,7 +1053,7 @@ function buildSpec() {
   if (wrap) wrap.innerHTML = '';
 }
 // 注册
-$('#open').onclick = () => { issuing = true; $('#welcome').classList.add('ready','on'); show(['welcome', 'issue']); try { update(); } catch (e) {} setTimeout(() => { const n = $('#fName'); if (n) n.focus(); }, 200); };
+$('#open').onclick = () => { if (window.ChecklistProto) ChecklistProto.showLogin('login'); };
 const fN = $('#fName'), fO = $('#fOrg'), fR = $('#fRole');
 function attached() { return /数源/.test(fO.value); }
 function update() {
@@ -1092,7 +1165,7 @@ window.UX && UX.init(1, 'dark');
 // 缩放 + 启动
 function fit() { const s = Math.min(innerWidth / W, innerHeight / H), a = $('#app'); a.style.transform = `translate(${(innerWidth - W * s) / 2}px,${(innerHeight - H * s) / 2}px) scale(${s})`; $('#scroll').style.height = (innerHeight * 6.2) + 'px'; }
 addEventListener('resize', fit); fit();
-Promise.all([document.fonts.ready, new Promise(r => { const im = $('#earthImg'); im.complete ? r() : (im.onload = r); })]).then(() => { sampleLights(); sampleGlyph(); window.__ready = true; T0 = performance.now(); if (INVITE) scrollTo(0, innerHeight * 5.2); if (location.hash.startsWith('#q=')) scrollTo(0, innerHeight * +location.hash.slice(3)); onScroll(); requestAnimationFrame(draw); });
+Promise.all([document.fonts.ready, new Promise(r => { const im = $('#earthImg'); im.complete ? r() : (im.onload = r); })]).then(() => { try { sampleLights(); } catch (e) { console.warn('sampleLights', e); } try { sampleGlyph(); } catch (e) { console.warn('sampleGlyph', e); } window.__ready = true; T0 = performance.now(); if (INVITE) scrollTo(0, innerHeight * 5.2); if (location.hash.startsWith('#q=')) scrollTo(0, innerHeight * +location.hash.slice(3)); onScroll(); requestAnimationFrame(draw); });
 </script>
 <script src="checklist-proto.js"></script>
 <script>

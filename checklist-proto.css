@@ -1,25 +1,113 @@
 /* 清单补全层 · 登录 / 工作台 / 多任务卡 / DAG / 组网三态 / 轮播 */
-#loginAct,#workbenchAct{position:fixed;inset:0;z-index:42;display:none;align-items:center;justify-content:center;
+
+/* 登录层与开场星图同一套视觉：深色可透视玻璃、顶栏品牌、浅色胶囊主按钮 */
+#loginAct{
+  position:fixed;inset:0;z-index:110;display:flex;align-items:center;justify-content:center;
+  opacity:0;pointer-events:none;color:var(--ink,#ECEAE4);
+  background:radial-gradient(ellipse 55% 65% at 50% 52%,rgba(5,6,8,.38),rgba(5,6,8,.1) 72%,rgba(5,6,8,.06));
+  transition:opacity .55s ease;
+  padding-top:72px;box-sizing:border-box;
+}
+#loginAct.on{opacity:1;pointer-events:auto}
+#loginAct .lp{
+  width:min(400px,92vw);padding:36px 36px 22px;text-align:left;
+  border-radius:20px;
+  background:rgba(8,10,16,.42);
+  -webkit-backdrop-filter:blur(22px) saturate(1.25);
+  backdrop-filter:blur(22px) saturate(1.25);
+  border:1px solid var(--line,rgba(255,255,255,.14));
+  box-shadow:0 24px 80px rgba(0,0,0,.4);
+  transform:translateY(12px);
+  transition:transform .5s cubic-bezier(.2,.8,.2,1);
+}
+#loginAct.on .lp{transform:none}
+#loginAct .lg-mark{
+  display:flex;align-items:center;justify-content:center;gap:12px;margin:0 0 26px;
+}
+#loginAct .lg-mark img{height:20px;filter:brightness(1.4)}
+#loginAct .lg-mark b{
+  display:flex;align-items:baseline;gap:8px;
+  font:600 15px/1 NSans,"PingFang SC",sans-serif;letter-spacing:.02em;color:var(--ink,#ECEAE4);font-weight:600;
+}
+#loginAct .lg-mark small{
+  font:500 10.5px JBM,ui-monospace,monospace;letter-spacing:.26em;color:var(--faint,rgba(236,234,228,.3));
+}
+#loginAct .kick{
+  margin:0 0 12px;text-align:center;
+  font:500 11px JBM,ui-monospace,monospace;letter-spacing:.32em;color:rgba(255,255,255,.45);
+}
+#loginAct h2{
+  margin:0 0 8px;text-align:center;
+  font:600 28px/1.2 NSans,"PingFang SC",sans-serif;letter-spacing:-.02em;color:var(--ink,#ECEAE4);
+}
+#loginAct .sub{
+  margin:0 0 26px;text-align:center;
+  font:400 14px/1.55 NSans;color:var(--mut,rgba(236,234,228,.58));
+}
+#loginAct .f{margin-bottom:16px}
+#loginAct .f label{
+  display:block;font:500 11px JBM,ui-monospace,monospace;letter-spacing:.2em;
+  color:var(--faint,rgba(236,234,228,.3));margin-bottom:8px;
+}
+#loginAct .f input{
+  width:100%;box-sizing:border-box;
+  border:1px solid var(--line,rgba(255,255,255,.14));border-radius:12px;
+  background:rgba(14,17,26,.45);color:var(--ink,#ECEAE4);
+  padding:12px 14px;font:400 15px NSans,"PingFang SC",sans-serif;
+  outline:none;transition:border-color .15s,box-shadow .15s;
+}
+#loginAct .f input::placeholder{color:var(--faint,rgba(236,234,228,.3))}
+#loginAct .f input:focus{
+  border-color:rgba(111,147,255,.5);box-shadow:0 0 0 3px rgba(111,147,255,.16);
+  background:rgba(14,17,26,.6);
+}
+#loginAct .f input:-webkit-autofill,
+#loginAct .f input:-webkit-autofill:hover,
+#loginAct .f input:-webkit-autofill:focus{
+  -webkit-text-fill-color:var(--ink,#ECEAE4);
+  -webkit-box-shadow:0 0 0 30px rgba(14,17,26,.9) inset;
+  caret-color:var(--ink,#ECEAE4);
+  transition:background-color 9999s ease-out;
+}
+#loginAct .sign{
+  width:100%;margin-top:8px;border:0;border-radius:999px;padding:14px 26px;cursor:pointer;
+  background:#F5F5F2;color:#0A0B0E;
+  font:600 15px NSans,"PingFang SC",sans-serif;
+  box-shadow:0 0 0 1px rgba(255,255,255,.15),0 10px 40px -10px rgba(120,150,255,.35);
+}
+#loginAct .sign:hover{filter:brightness(1.06)}
+#loginAct .switch{
+  margin:18px 0 0;text-align:center;font:400 13px NSans;color:var(--mut,rgba(236,234,228,.58));
+}
+#loginAct .switch button{
+  background:none;border:0;padding:0;margin:0;cursor:pointer;
+  color:var(--ink,#ECEAE4);font:500 13px NSans;
+}
+#loginAct .switch button:hover{color:#A9BEFF}
+#loginAct .back{
+  display:block;margin:10px auto 0;background:none;border:0;cursor:pointer;
+  color:var(--faint,rgba(236,234,228,.3));font:400 12px NSans;
+}
+#loginAct .back:hover{color:var(--ink,#ECEAE4)}
+
+/* 登录淡入时，欢迎幕底部 CTA 让位，标题与星图留在玻璃后 */
+#welcome.on.login-up .ctaw,
+#welcome.ready.login-up .ctaw,
+#welcome.login-up .ctaw{
+  opacity:0!important;
+  transform:translateY(12px)!important;
+  pointer-events:none!important;
+  transition:opacity .45s ease,transform .5s cubic-bezier(.2,.8,.2,1)!important;
+}
+
+#workbenchAct{position:fixed;inset:0;z-index:42;display:none;align-items:center;justify-content:center;
   background:radial-gradient(1200px 700px at 50% -10%,rgba(21,67,242,.22),transparent 55%),#06070A;color:#ECEAE4}
-#loginAct.on,#workbenchAct.on{display:flex}
-#loginAct .lp,#workbenchAct .wb{width:min(920px,92vw);max-height:min(860px,90vh);overflow:auto;
+#workbenchAct.on{display:flex}
+#workbenchAct .wb{width:min(920px,92vw);max-height:min(860px,90vh);overflow:auto;
   border:1px solid rgba(255,255,255,.12);border-radius:18px;background:rgba(14,17,26,.92);
   box-shadow:0 30px 80px rgba(0,0,0,.45);padding:36px 36px 28px}
-#loginAct .lp{width:min(460px,92vw)}
-#loginAct h2,#workbenchAct h2{margin:0 0 8px;font:600 28px/1.3 NSerif,"PingFang SC",serif;letter-spacing:.08em}
-#loginAct .sub,#workbenchAct .sub{margin:0 0 22px;font:400 13.5px/1.6 NSans;color:rgba(236,234,228,.55)}
-#loginAct .tabs{display:flex;gap:8px;margin-bottom:18px}
-#loginAct .tabs button{flex:1;border:1px solid rgba(255,255,255,.14);background:transparent;color:rgba(236,234,228,.7);
-  padding:10px 12px;border-radius:10px;font:500 13px NSans;cursor:pointer}
-#loginAct .tabs button.on{border-color:rgba(111,147,255,.7);color:#fff;background:rgba(77,123,255,.14)}
-#loginAct .f{margin-bottom:14px}
-#loginAct .f label{display:flex;justify-content:space-between;font:500 12px NSans;color:rgba(236,234,228,.55);margin-bottom:6px}
-#loginAct .f input{width:100%;box-sizing:border-box;border:1px solid rgba(255,255,255,.14);border-radius:10px;
-  background:rgba(255,255,255,.04);color:#fff;padding:12px 14px;font:400 14px NSans}
-#loginAct .sign{width:100%;margin-top:8px;border:0;border-radius:12px;padding:14px 16px;cursor:pointer;
-  background:linear-gradient(160deg,#1543F2,#0A2AB8);color:#fff;font:500 15px NSans}
-#loginAct .hint{margin-top:14px;font:400 12px/1.55 NSans;color:rgba(236,234,228,.4)}
-#loginAct .back{margin-top:16px;background:none;border:0;color:rgba(111,147,255,.9);font:500 13px NSans;cursor:pointer}
+#workbenchAct h2{margin:0 0 8px;font:600 28px/1.3 NSerif,"PingFang SC",serif;letter-spacing:.08em}
+#workbenchAct .sub{margin:0 0 22px;font:400 13.5px/1.6 NSans;color:rgba(236,234,228,.55)}
 
 #workbenchAct .wb-hd{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;margin-bottom:18px}
 #workbenchAct .wb-acts{display:flex;gap:8px;flex-wrap:wrap}

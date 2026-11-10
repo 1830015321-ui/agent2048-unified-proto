@@ -67,20 +67,28 @@
 #matchAct .clock b{color:var(--ink);font-weight:500}
 #matchAct .tr{position:absolute;right:36px;top:24px}
 #matchAct .tr button{background:rgba(255,255,255,.04);border:1px solid var(--line);color:var(--mut);font:400 13px NSans;padding:7px 14px;border-radius:999px}
-#matchAct .left{position:absolute;left:36px;top:132px;width:200px}
+#matchAct .left{position:absolute;left:36px;top:132px;width:228px;bottom:100px;overflow:hidden}
 #matchAct .lt{font:500 10px JBM;letter-spacing:.3em;color:var(--faint);margin-bottom:12px}
-#matchAct .ph{display:flex;gap:11px;padding:7px 0;opacity:.3;transition:opacity .4s}
+#matchAct .ph{display:flex;gap:11px;padding:5px 0;opacity:.3;transition:opacity .4s}
 #matchAct .ph.on{opacity:1}
 #matchAct .ph.done{opacity:.6}
 #matchAct .ph i{width:8px;height:8px;border-radius:50%;border:1.5px solid var(--mut);margin-top:6px;flex:none}
 #matchAct .ph.on i{background:var(--blue);border-color:var(--blue);box-shadow:0 0 10px var(--blue)}
 #matchAct .ph.done i{background:var(--gold);border-color:var(--gold)}
 #matchAct .ph b{font:500 14px NSans}
-#matchAct .num{margin-top:26px;padding-top:16px;border-top:1px solid var(--line)}
-#matchAct .num div{margin-bottom:14px}
+#matchAct .num{margin-top:18px;padding-top:14px;border-top:1px solid var(--line)}
+#matchAct .num div{margin-bottom:10px}
 #matchAct .num small{display:block;font:500 10px JBM;letter-spacing:.24em;color:var(--faint)}
-#matchAct .num b{display:block;margin-top:3px;font:400 30px NR}
+#matchAct .num b{display:block;margin-top:3px;font:400 32px/1.1 NR;letter-spacing:-.02em}
 #matchAct .num b em{font:400 13px NSans;font-style:normal;color:var(--mut);margin-left:6px}
+#matchAct .num b.na{font:400 16px/1.3 NSans;letter-spacing:0;margin-top:4px}
+#matchAct .num .sk{margin:4px 0 0;font:400 17px NSans;color:var(--ink)}
+#matchAct .num .snap{margin:4px 0 0;font:500 11px JBM;letter-spacing:.02em;color:var(--faint)}
+#matchAct .num .hint{margin:3px 0 0;font:400 11px/1.45 NSans;color:var(--faint)}
+#matchAct .num .note{margin:8px 0 0;font:400 11px/1.55 NSans;color:var(--faint)}
+#matchAct #mSlogan{position:absolute;left:50%;bottom:108px;transform:translateX(-50%);width:min(640px,70%);text-align:center;pointer-events:none;transition:opacity .45s;z-index:8}
+#matchAct #mSlogan b{display:block;font:500 28px NSerif;letter-spacing:.06em;color:#fff}
+#matchAct #mSlogan p{margin:10px 0 0;font:400 13px/1.65 NSans;color:var(--mut)}
 #matchAct .needs{position:absolute;right:32px;top:120px;width:268px}
 #matchAct .needs .t{display:flex;justify-content:space-between;align-items:baseline;font:500 10px JBM;letter-spacing:.26em;color:var(--faint);margin-bottom:10px}
 #matchAct .needs .t b{font:400 26px NR;color:var(--ink);letter-spacing:0}
