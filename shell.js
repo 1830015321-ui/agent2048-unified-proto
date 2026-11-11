@@ -1,11 +1,10 @@
-/* 融合原型 · 统一顶栏（注册→提需求→完善→组网→方案） */
+/* 融合原型 · 统一顶栏（注册→提需求→组网→方案） */
 (function () {
   const STEPS = [
     { id: 1, label: '注册', file: 'step1-领证.html' },
     { id: 2, label: '提需求', file: 'step2-补全.html' },
-    { id: 3, label: '完善', file: 'step1-领证.html' },
-    { id: 4, label: '组网', file: 'step3-匹配组网.html' },
-    { id: 5, label: '方案', file: 'step4-组网方案.html' },
+    { id: 3, label: '组网', file: 'step3-匹配组网.html' },
+    { id: 4, label: '方案', file: 'step4-组网方案.html' },
   ];
 
   function readProfile() {
@@ -38,7 +37,7 @@
         <div class="ux-rail" id="ux-rail"></div>
         <div class="ux-chip" id="ux-chip"><span class="ux-si">·</span><div><b id="ux-chip-name">—</b><span id="ux-chip-no">—</span></div></div>`;
       const host = document.getElementById('app') || document.body;
-      if (document.body.classList.contains('scheme-live') || (step === 5 && document.getElementById('schemeAct'))) {
+      if (document.body.classList.contains('scheme-live') || (step === 4 && document.getElementById('schemeAct'))) {
         document.body.appendChild(el);
         el.classList.add('sticky');
       } else {
@@ -49,13 +48,13 @@
       rail.innerHTML = STEPS.map((s, i) =>
         `<span class="s" data-step="${s.id}"><i>0${s.id}</i>${s.label}</span>${i < STEPS.length - 1 ? '<span class="sep">→</span>' : ''}`
       ).join('');
-    } else if (step === 5 && el.parentElement !== document.body && document.getElementById('schemeAct')) {
+    } else if (step === 4 && el.parentElement !== document.body && document.getElementById('schemeAct')) {
       document.body.appendChild(el);
     }
     el.className = '';
     el.classList.add(theme === 'light' ? 'theme-light' : 'theme-dark');
     if (step === 1 && !(readProfile() || {}).registered) el.classList.add('pre');
-    if (step === 5) el.classList.add('with-acts', 'sticky');
+    if (step === 4) el.classList.add('with-acts', 'sticky');
 
     el.querySelectorAll('.ux-rail .s').forEach(n => {
       const id = +n.dataset.step;
@@ -129,7 +128,7 @@
           bar.appendChild(a);
         }
       });
-      // 全局条：完善/组网等全屏幕会盖住页脚 .demo
+      // 全局条：组网等全屏幕会盖住页脚 .demo
       if (!document.getElementById('fullchainBar')) {
         const bar = document.createElement('div');
         bar.id = 'fullchainBar';
@@ -149,7 +148,7 @@
     wireFullChainEntry,
     init(step, theme) {
       document.documentElement.classList.add('ux-unified');
-      const dark = step === 1 || step === 4;
+      const dark = step === 1 || step === 3;
       ensureChrome(step, theme || (dark ? 'dark' : 'light'));
       // footer 「重新开始」清状态回开场；demo 参数时加醒目提示
       if (document.readyState === 'loading') {
@@ -185,22 +184,15 @@
       location.href = 'step2-补全.html';
     },
     goEnrich() {
-      writeRun({ fromDemand: true, reqId: (readRun().reqId) || 'REQ-CITY-OPS-0001', caseId: (readRun().caseId) || 'city-ops', scene: (readRun().scene) || '城运视频识别' });
-      if (typeof window.__enterEnrichAct === 'function') { window.__enterEnrichAct(); return; }
-      // fallback: skip to match
+      // 完善信息已从主路径移除；旧入口改走组网，避免再打开完善幕
       this.goMatch();
     },
     goMatch() {
-      writeRun({ fromEnrich: true, reqId: (readRun().reqId) || 'REQ-CITY-OPS-0001', caseId: (readRun().caseId) || 'city-ops', scene: (readRun().scene) || '城运视频识别' });
+      writeRun({ reqId: (readRun().reqId) || 'REQ-CITY-OPS-0001', caseId: (readRun().caseId) || 'city-ops', scene: (readRun().scene) || '城运视频识别' });
       if (typeof window.__enterMatchAct === 'function') { window.__enterMatchAct(); return; }
       location.href = 'step3-匹配组网.html';
     },
     goScheme() {
-      const run = readRun();
-      if (!run.preference && !run.preferenceLabel) {
-        const seed = run.preferenceSeed || 'fast';
-        writeRun({ preference: seed, preferenceLabel: ({ fast: '上线快', cheap: '成本低', local: '政务云' })[seed] || '政务云' });
-      }
       if (typeof window.__enterSchemeAct === 'function') { window.__enterSchemeAct(); return; }
       location.href = 'step4-组网方案.html';
     },

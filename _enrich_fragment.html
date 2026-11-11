@@ -1,0 +1,71 @@
+  <!-- synced -->
+  <div id="enrichAct" aria-hidden="true">
+    <div class="eh">
+      <div class="eh-top">
+        <small>STEP 03 · 完善信息</small>
+        <button type="button" class="listen-btn need-tap" id="eListen" aria-label="收听说明">
+          <span class="listen-ico" aria-hidden="true"></span>
+          <span class="listen-lab">收听说明</span>
+          <span class="listen-hint">点这里听</span>
+        </button>
+      </div>
+      <h1>组网前，再告诉平台一点</h1>
+      <p>这些不是再填一遍表。选几个关键上下文，候选智能体和部署方式会更准。</p>
+    </div>
+    <div class="e-grid">
+      <div class="e-card">
+        <h3>现场与规模</h3>
+        <div class="hint">影响召回范围和本地算力建议</div>
+        <div class="chips">
+          <button type="button" class="chip" data-g="scale" data-v="单栋建筑">单栋建筑</button>
+          <button type="button" class="chip" data-g="scale" data-v="中型园区">中型园区</button>
+          <button type="button" class="chip" data-g="scale" data-v="大型园区 / 多楼">大型园区 / 多楼</button>
+          <button type="button" class="chip on" data-g="scale" data-v="城市级多点">城市级多点</button>
+        </div>
+        <label class="f"><span>摄像头规模</span>
+          <select id="eCam">
+            <option>30 路以内</option>
+            <option>80–200 路</option>
+            <option>200–500 路</option>
+            <option selected>500 路以上</option>
+            <option>约 1.2 万路试点</option>
+          </select>
+        </label>
+        <div class="hint" style="margin-top:14px">值守方式</div>
+        <div class="chips" style="margin-top:8px">
+          <button type="button" class="chip on" data-g="duty" data-v="城运中心值班">城运中心值班</button>
+          <button type="button" class="chip" data-g="duty" data-v="24 小时值班">24 小时值班</button>
+          <button type="button" class="chip" data-g="duty" data-v="承办单位值守">承办单位值守</button>
+        </div>
+      </div>
+      <div class="e-card">
+        <h3>已有系统与部署</h3>
+        <div class="hint">可多选；组网时优先复用，不推倒重来</div>
+        <div class="chips">
+          <button type="button" class="chip soft on" data-g="systems" data-v="视频平台" data-multi="1">视频平台</button>
+          <button type="button" class="chip soft on" data-g="systems" data-v="工单系统" data-multi="1">工单系统</button>
+          <button type="button" class="chip soft on" data-g="systems" data-v="热线" data-multi="1">热线</button>
+          <button type="button" class="chip soft" data-g="systems" data-v="网格巡查" data-multi="1">网格巡查</button>
+          <button type="button" class="chip soft" data-g="systems" data-v="尚无数字化" data-multi="1">尚无数字化</button>
+        </div>
+        <div class="hint" style="margin-top:16px">部署倾向（组网偏好会参考）</div>
+        <div class="chips">
+          <button type="button" class="chip on" data-g="deploy" data-v="政务云">政务云</button>
+          <button type="button" class="chip" data-g="deploy" data-v="上线快">上线快</button>
+          <button type="button" class="chip" data-g="deploy" data-v="成本优先">成本优先</button>
+          <button type="button" class="chip" data-g="deploy" data-v="本地优先">本地优先</button>
+        </div>
+        <label class="f"><span>还有什么必须满足？（可选）</span>
+          <textarea id="eNote" placeholder="例：部署在政务云授权环境；人脸车牌按需脱敏；对接现有工单接口…"></textarea>
+        </label>
+        <div class="sum" id="eSum"></div>
+      </div>
+    </div>
+    <div class="foot">
+      <div class="note">完善后进入组网检索 · 仍可在组网中途改偏好</div>
+      <div>
+        <button type="button" class="back" id="eBack">← 返回需求</button>
+        <button type="button" class="cta" id="eGo">信息已够，开始组网 →</button>
+      </div>
+    </div>
+  </div>

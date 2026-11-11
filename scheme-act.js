@@ -175,11 +175,21 @@ $('#shareB').onclick = () => { navigator.clipboard?.writeText(location.href); to
 function applyRunState() {
   const run = (window.UX && UX.readRun && UX.readRun()) || {};
   const profile = (window.UX && UX.profile && UX.profile()) || {};
-  const prefLabel = run.preferenceLabel || ({ fast: '上线快', cheap: '成本低', local: '政务云' }[run.preference] || '政务云');
-  const prefEl = root.querySelector('.hmeta div:last-child b');
-  if (prefEl) prefEl.textContent = prefLabel;
+  const prefLabel = run.preferenceLabel || ({ fast: '上线快', cheap: '成本低', local: '政务云' }[run.preference] || '');
+  const prefMeta = root.querySelector('[data-pref-meta]') || root.querySelector('.hmeta div:last-child');
+  if (prefMeta && prefMeta.querySelector('span') && prefMeta.querySelector('span').textContent.trim() === '偏好') {
+    if (prefLabel) {
+      prefMeta.hidden = false;
+      const b = prefMeta.querySelector('b');
+      if (b) b.textContent = prefLabel;
+    } else {
+      prefMeta.hidden = true;
+    }
+  }
   const lead = root.querySelector('#s7 .lead');
-  if (lead) lead.textContent = `按「${prefLabel}」偏好排期，共 8 周。具体日期在启动会上确认。`;
+  if (lead) lead.textContent = prefLabel
+    ? `按「${prefLabel}」偏好排期，共 8 周。具体日期在启动会上确认。`
+    : '排期共 8 周。具体日期在启动会上确认。';
   const name = profile.name || '邓义';
   const org = run.org || profile.org || '市城市运行管理中心';
   const role = profile.role || '高级运营';
@@ -193,12 +203,50 @@ function applyRunState() {
   if (sub) sub.textContent = `2 个方案 · 26+13 Agent；城运中心 ${run.coverageA || '7/7'} · 承办 ${run.coverageB || '4/5'}（整治待匹配）`;
 }
 
+function bindDemandReportHook() {
+  const btn = document.getElementById('viewDemandReport');
+  if (!btn || btn._bound) return;
+  btn._bound = true;
+  btn.onclick = () => {
+    const run = (window.UX && UX.readRun && UX.readRun()) || {};
+    const caseId = run.caseId || 'city-ops';
+    let source = null;
+    if (caseId === 'education' && window.EDU_CASE && window.EDU_CASE.demand) {
+      source = JSON.parse(JSON.stringify(window.EDU_CASE.demand));
+      source.caseId = 'education';
+    } else if (window.CITY_OPS) {
+      const c = window.CITY_OPS;
+      // prefer the live demand-act session if it still holds city-ops
+      source = (window.DemandReport && DemandReport.getSession().source && DemandReport.getSession().source.caseId === 'city-ops')
+        ? DemandReport.getSession().source
+        : null;
+    }
+    if (window.__demandOpenReport) {
+      window.__demandOpenReport({
+        includeMatch: true,
+        status: 'done',
+        source: source || undefined,
+        updatedAt: run.updatedAt || (window.DemandReport && DemandReport.DEMO_STAMP),
+        confirmedAt: run.confirmedAt || run.updatedAt || (window.DemandReport && DemandReport.DEMO_STAMP),
+        matchOutcome: run.matchOutcome,
+      });
+      return;
+    }
+    if (window.DemandReport) {
+      if (source) DemandReport.setSession({ source, status: 'done', includeMatch: true, updatedAt: run.updatedAt, confirmedAt: run.confirmedAt, matchOutcome: run.matchOutcome });
+      DemandReport.openView({ includeMatch: true, status: 'done' });
+    }
+  };
+}
+
 window.__enterSchemeAct = async function (opts) {
   opts = opts || {};
   applyRunState();
+  bindDemandReportHook();
+  if (window.UX && UX.writeRun) UX.writeRun({ matchDone: true });
   const match = document.getElementById('matchAct');
   if (match) match.classList.add('leaving-to-scheme');
-  window.UX && UX.init(5, 'light');
+  window.UX && UX.init(4, 'light');
   document.body.classList.add('scheme-live', 'ux-unified');
   if (!opts.instant) await new Promise(r => setTimeout(r, 220));
   root.setAttribute('aria-hidden', 'false');

@@ -281,12 +281,13 @@ button{font:inherit;cursor:pointer}
 #welcome .spec,#welcome .spec-shadow{display:none!important}
 </style>
 <link rel="stylesheet" href="shell.css">
-<link rel="stylesheet" href="demand-act.css">
+<link rel="stylesheet" href="demand-act.css?v=confirmstay1">
+<link rel="stylesheet" href="demand-report.css">
 <link rel="stylesheet" href="match-act.css">
 <link rel="stylesheet" href="enrich-act.css?v=enrichfix4">
 <link rel="stylesheet" href="scheme-act.css">
-<link rel="stylesheet" href="checklist-proto.css">
-<script src="shell.js"></script>
+<link rel="stylesheet" href="checklist-proto.css?v=confirmstay1">
+<script src="shell.js?v=dropask1"></script>
 </head>
 <body>
 <div id="scroll"></div>
@@ -311,13 +312,13 @@ button{font:inherit;cursor:pointer}
     <div class="line" id="l1" data-n="01 / 04 · 工业时代">工业时代，机器成为新的劳动力。</div>
     <div class="line" id="l2" data-n="02 / 04 · 智能时代">智能时代，<b>百亿级智能体</b>正在成为新的数字生产力。</div>
     <div class="line" id="l3" data-n="03 / 04 · 秩序">它们需要被验证、被找到、被组织起来。</div>
-    <div class="line" id="l4" data-n="04 / 04"><b>2,898</b> 个智能体，已各就其位。</div>
+    <div class="line" id="l4" data-n="04 / 04"><b>3000+</b> 个智能体，已各就其位。</div>
   </div>
 
   <!-- 2 欢迎加入 -->
   <div class="layer" id="welcome">
     <div class="hero2"><div class="kick" id="kick">JOIN THE NETWORK</div><h1 id="wt">你提需求，我来组织</h1>
-      <p>今天，已有 <b>2,898</b> 个智能体 · <b>7,111</b> 项技能 在网络中</p></div>
+      <p>今天，已有 <b>3000+</b> 个智能体 · <b>10000+</b> 项技能 在网络中</p></div>
     <div class="ctaw"><button class="cta" id="open">注册账号，开始使用<small>约 30 秒</small></button>
       <div class="calm2">说清场景里的问题，平台帮你匹配智能体，组出可落地的方案</div></div>
   </div>
@@ -325,7 +326,7 @@ button{font:inherit;cursor:pointer}
   <!-- 3 注册成功 -->
   <div class="layer" id="after">
     <div class="hero2"><div class="kick">ACCOUNT · READY</div><h1 id="hi">欢迎你。</h1>
-      <p>先指出你要解决的问题。平台整理成需求、请你补一点上下文，再为你匹配智能体并给出组网方案。</p></div>
+      <p>先指出你要解决的问题。平台整理成需求、请你确认业务流程，再为你匹配智能体并给出组网方案。</p></div>
     <div class="ctaw"><div class="next on"><button class="btn2" id="shareBtn">邀请同事一起用</button><button class="btnw" id="goDemand">开始提出需求 →</button></div></div>
   </div>
 
@@ -335,7 +336,7 @@ button{font:inherit;cursor:pointer}
       <div class="form" style="grid-column:1/-1;max-width:520px;margin:0 auto;padding:56px 48px 48px">
         <div class="k">CREATE ACCOUNT</div>
         <h2>注册账号</h2>
-        <div class="sub">先留三个字段，后面组网前再完善匹配信息。</div>
+        <div class="sub">先留姓名、机构和岗位，方便协作和匹配。</div>
         <div class="f"><label>姓名<i>怎么称呼你</i></label><input id="fName" maxlength="10" autocomplete="off" placeholder="例：陈思远"></div>
         <div class="f"><label>所在机构<i id="orgHint">用于匹配同机构协作</i></label><input id="fOrg" maxlength="40" autocomplete="off" placeholder="例：全球数源中心（广州南沙）有限公司"></div>
         <div class="f"><label>岗位<i>让需求与方案更贴你的职责</i></label><input id="fRole" maxlength="20" autocomplete="off" placeholder="例：消防信息化负责人"></div>
@@ -365,24 +366,60 @@ button{font:inherit;cursor:pointer}
   <div class="prog" id="prog"><i></i><i></i><i></i><i></i><i></i><i></i></div>
   <div class="demo">全链路入口 · 无参数打开即从注册开场 · 加 <code>?invite</code> 看被邀请视角<a href="step1-领证.html" data-restart="1">↻ 重新开始</a><a href="index.html">融合入口</a></div>
 
-  <!-- 同页需求幕：左对话 + 右需求栏（城运案例演示） -->
+  <!-- 同页需求幕：左整理/流程预览 + 右需求文档与输入（新客户提需求） -->
   <div id="demandAct" aria-hidden="true">
     <div class="dm-shell">
-      <aside class="dm-chat" id="dmChat">
-        <header class="dm-chat-hd">
-          <div class="dm-chat-title">
-            <span class="dm-kicker">对话</span>
-            <h2 id="dmChatTitle">新对话</h2>
+      <section class="dm-viz" id="dmViz">
+        <div class="dm-viz-empty" id="dmVizEmpty">
+          <b>需求整理与业务流程</b>
+          <p>在右侧描述你的需求后，这里会先理解并整理需求，再生成业务流程并更新预览。</p>
+        </div>
+        <div class="dm-org" id="dmOrgCard" hidden>
+          <header class="dm-org-hd">
+            <h2>正在整理需求</h2>
+            <span class="dm-org-timer" id="dmOrgTimer" aria-hidden="true">已用时 0 秒</span>
+          </header>
+          <ol class="dm-org-steps" id="dmOrgSteps">
+            <li data-step="1" class="is-on"><i>1</i><span>理解并整理需求</span></li>
+            <li data-step="2" class="is-wait"><i>2</i><span>生成业务流程并核对需求</span></li>
+            <li data-step="3" class="is-wait"><i>3</i><span>更新需求预览</span></li>
+          </ol>
+          <div class="dm-org-skel" aria-hidden="true">
+            <span class="dm-skel-bar w1"></span>
+            <span class="dm-skel-bar w2"></span>
+            <span class="dm-skel-bar w3"></span>
+            <span class="dm-skel-block"></span>
+            <span class="dm-skel-block"></span>
           </div>
-          <button type="button" class="dm-ghost" id="dmGuide" title="演示说明">使用说明</button>
+          <p class="dm-org-foot">需求整理好后会先显示，业务流程生成完成后会自动更新。</p>
+        </div>
+        <div class="dm-flowview" id="dmFlowView" hidden></div>
+        <span id="dmChatTitle" hidden>新对话</span>
+      </section>
+      <div class="dm-split" id="dmSplit" title="拖动调整预览与需求的宽度"></div>
+      <section class="dm-panel" id="dmPanel">
+        <header class="dm-panel-hd">
+          <div class="dm-panel-title">
+            <span class="dm-kicker">需求文档</span>
+            <h2 id="dmReqTitle" contenteditable="false">未命名需求</h2>
+            <span class="dm-ver" id="dmVer">V1</span>
+            <span class="dm-badge" id="dmBadge" data-st="idle">待整理</span>
+            <button type="button" class="dm-ghost" id="dmGuide" title="演示说明">使用说明</button>
+          </div>
         </header>
-        <div class="dm-log" id="dmLog" role="log" aria-live="polite">
-          <div class="dm-empty" id="dmEmpty">
-            <b>先在左侧描述你的需求</b>
-            <p>平台会整理成结构化需求，供你确认后匹配组网。演示可一键填入城运案例。</p>
-            <button type="button" class="dm-case" id="dmUseCase">使用城运案例</button>
+        <div class="dm-panel-body" id="dmPanelBody">
+          <div class="dm-panel-empty" id="dmPanelEmpty">
+            <b>在这里描述你的需求</b>
+            <p>平台会整理成结构化需求文档，左侧同步理解需求并生成业务流程。演示可一键填入案例。</p>
+            <div class="dm-case-row">
+              <button type="button" class="dm-case" id="dmUseCase">使用城运案例</button>
+            </div>
+          </div>
+          <div class="dm-panel-content" id="dmPanelContent" hidden>
+            <div id="dmDoc" class="dm-doc"></div>
           </div>
         </div>
+        <div class="dm-log" id="dmLog" hidden role="log"></div>
         <footer class="dm-composer">
           <div class="dm-tools">
             <button type="button" class="dm-tool" disabled title="演示版">语音</button>
@@ -390,74 +427,18 @@ button{font:inherit;cursor:pointer}
             <button type="button" class="dm-tool accent" id="dmFillCase">一键填入案例</button>
           </div>
           <div class="dm-input-row">
-            <textarea id="dmInput" rows="2" placeholder="描述你的需求，也可以添加文件…"></textarea>
+            <textarea id="dmInput" rows="2" placeholder="在这里描述你的需求，也可以添加文件…"></textarea>
             <button type="button" class="dm-send" id="dmSend" disabled aria-label="发送">↑</button>
           </div>
         </footer>
-      </aside>
-      <div class="dm-split" id="dmSplit" title="拖动调整对话与需求的宽度"></div>
-      <section class="dm-panel" id="dmPanel">
-        <header class="dm-panel-hd">
-          <div class="dm-panel-title">
-            <span class="dm-kicker">需求</span>
-            <h2 id="dmReqTitle" contenteditable="false">未命名需求</h2>
-            <span class="dm-ver" id="dmVer">v1</span>
-            <span class="dm-badge" id="dmBadge" data-st="idle">待整理</span>
-          </div>
-        </header>
-        <div class="dm-panel-body" id="dmPanelBody">
-          <div class="dm-panel-empty" id="dmPanelEmpty">先在左侧描述你的需求。</div>
-          <div class="dm-panel-content" id="dmPanelContent" hidden>
-            <section class="dm-sec">
-              <h3>组织信息</h3>
-              <dl class="dm-kv">
-                <div><dt>组织名称</dt><dd id="dmOrg">—</dd></div>
-                <div><dt>所属行业</dt><dd><span class="dm-pill" id="dmIndustry">—</span></dd></div>
-                <div><dt>组织规模</dt><dd id="dmScale">—</dd></div>
-              </dl>
-            </section>
-            <section class="dm-sec">
-              <h3>需求概述</h3>
-              <p class="dm-summary" id="dmSummary"></p>
-            </section>
-            <section class="dm-sec">
-              <h3>任务场景 <small id="dmTaskCount">1 个</small></h3>
-              <details class="dm-task" id="dmTask" open>
-                <summary>
-                  <span class="dm-task-idx">任务一</span>
-                  <span class="dm-task-name" id="dmTaskName"></span>
-                </summary>
-                <div class="dm-task-body">
-                  <div class="dm-field"><label>任务描述</label><p id="dmTaskDesc" class="clamp"></p><button type="button" class="dm-more" data-target="dmTaskDesc">展开</button></div>
-                  <div class="dm-field"><label>使用对象</label><p id="dmTaskUsers"></p></div>
-                  <div class="dm-field"><label>预期结果</label><p id="dmTaskExpect" class="clamp"></p><button type="button" class="dm-more" data-target="dmTaskExpect">展开</button></div>
-                  <div class="dm-field"><label>关键步骤</label><p id="dmTaskSteps" class="clamp"></p><button type="button" class="dm-more" data-target="dmTaskSteps">展开</button></div>
-                  <div class="dm-field"><label>业务输入</label><p id="dmTaskInputs" class="clamp"></p><button type="button" class="dm-more" data-target="dmTaskInputs">展开</button></div>
-                  <div class="dm-field"><label>关键要求</label><p id="dmTaskReqs" class="clamp"></p><button type="button" class="dm-more" data-target="dmTaskReqs">展开</button></div>
-                </div>
-              </details>
-            </section>
-            <section class="dm-sec" id="dmFlowSec">
-              <h3>业务流程 / 方案 <small id="dmFlowMeta">确认后匹配</small></h3>
-              <div class="dm-flow" id="dmFlow">
-                <div class="dm-flow-empty" id="dmFlowEmpty">确认需求并完成匹配后，这里回填城运双方案摘要。</div>
-                <div class="dm-flow-body" id="dmFlowBody" hidden></div>
-              </div>
-            </section>
-            <section class="dm-sec" id="dmClarifySec">
-              <h3>建议澄清 <small>可选</small></h3>
-              <ul class="dm-clarify" id="dmClarify"></ul>
-            </section>
-          </div>
-        </div>
         <footer class="dm-panel-ft">
           <div class="dm-ft-left">
             <button type="button" class="dm-btn" id="dmView" disabled>查看</button>
             <button type="button" class="dm-btn" id="dmExport" disabled>导出</button>
           </div>
           <div class="dm-ft-right">
-            <button type="button" class="dm-btn solid" id="dmConfirm" disabled>确认需求</button>
-            <button type="button" class="dm-btn primary" id="dmMatch" disabled>匹配组网</button>
+            <button type="button" class="dm-btn" id="dmConfirm" disabled>确认需求</button>
+            <button type="button" class="dm-btn pending" id="dmMatch" disabled>匹配组网</button>
           </div>
         </footer>
       </section>
@@ -476,7 +457,7 @@ button{font:inherit;cursor:pointer}
       </div>
     </div>
     <div class="dm-toast" id="dmToast" hidden></div>
-    <div class="demo">全链路 · 城运对话<a href="step1-领证.html" data-restart="1">↻ 重新开始</a><a href="index.html">融合入口</a></div>
+    <div class="demo">全链路 · 新客户提需求<a href="step1-领证.html" data-restart="1">↻ 重新开始</a><a href="index.html">融合入口</a><a href="step1-领证.html?demo=demand-flow">流程预览</a><a href="step1-领证.html?demo=report">需求报告</a></div>
   </div>
 
   <!-- 同页完善信息幕：需求确认后、组网前 -->
@@ -552,7 +533,7 @@ button{font:inherit;cursor:pointer}
   </div>
 
 
-  <!-- 同页组网幕：完善后连贯切入 -->
+  <!-- 同页组网幕：确认需求后连贯切入 -->
   <div id="matchAct" aria-hidden="true">
 
   <canvas id="mCv" width="1440" height="900"></canvas>
@@ -564,8 +545,8 @@ button{font:inherit;cursor:pointer}
       <div class="num" id="mStats">
         <div class="lib">
           <small>检索范围</small>
-          <b id="mNA">2,898 <em>个智能体</em></b>
-          <p class="sk" id="mNS">7,111 项技能</p>
+          <b id="mNA">3000+ <em>个智能体</em></b>
+          <p class="sk" id="mNS">10000+ 项技能</p>
           <p class="snap" id="mSnap">2026-11-10 数据快照</p>
         </div>
         <div>
@@ -588,7 +569,6 @@ button{font:inherit;cursor:pointer}
     <div class="needs"><div class="t"><span>城运环节</span><b id="mCov">0<em> / 7</em></b></div><div id="mNds"></div></div>
     <div id="mSlogan"><b>从理解需求，到连接能力</b><p>以真实业务需求为起点，构建更贴合目标的智能协作网络。</p></div>
     <div class="log" id="mLog"></div>
-    <div id="mAsk"><h4>你更看重哪一点？</h4><p>选一个，网络会按它调整 · 6 秒不选按「政务云」</p><div class="o"><button data-v="fast">上线快</button><button data-v="cheap">成本低</button><button data-v="local">政务云</button></div><div class="bar"><i id="mAskBar"></i></div></div>
     <div id="mPop"><button type="button" class="x" aria-label="关闭">×</button>
       <small id="mPk"></small>
       <h5 id="mPn"></h5>
@@ -615,7 +595,7 @@ button{font:inherit;cursor:pointer}
 <div class="bar">
   <div class="brand"><img src="mark.png" alt="">测评组网系统</div>
   <div class="steps"><span><i>01</i>领取身份</span><span><i>02</i>讲需求</span><span><i>03</i>组网</span><b><i>04</i>组网方案</b></div>
-  <div class="acts"><button class="btn" onclick="print()">导出 PDF</button><button class="btn" id="shareB">分享给同事</button><button class="btn pri" id="okB">确认方案，发起对接</button></div>
+  <div class="acts"><button class="btn" id="viewDemandReport">查看需求报告</button><button class="btn" onclick="print()">导出 PDF</button><button class="btn" id="shareB">分享给同事</button><button class="btn pri" id="okB">确认方案，发起对接</button></div>
 </div>
 
 <div class="wrap">
@@ -638,7 +618,7 @@ button{font:inherit;cursor:pointer}
         <div><span>发起人</span><b>邓义 · 高级运营</b></div>
         <div><span>账号</span><b class="mono">U · CITY</b></div>
         <div><span>关联需求</span><b class="mono">REQ-CITY-OPS-0001</b></div>
-        <div><span>偏好</span><b>政务云</b></div>
+        <div data-pref-meta hidden><span>偏好</span><b></b></div>
       </div>
     </div>
 
@@ -693,7 +673,7 @@ button{font:inherit;cursor:pointer}
 
     <section class="sec" id="s7">
       <div class="sh"><i>07</i><h2>实施计划</h2></div>
-      <p class="lead">按「上线快」偏好排期，共 7 周。具体日期在启动会上确认。</p>
+      <p class="lead">排期共 8 周。具体日期在启动会上确认。</p>
       <div class="gantt" id="gantt"></div>
     </section>
 
@@ -754,12 +734,13 @@ button{font:inherit;cursor:pointer}
 
 </div>
 
-<script src="city-ops-data.js"></script>
+<script src="city-ops-data.js?v=libcounts1"></script>
 <script src="education-data.js"></script>
-<script src="demand-act.js"></script>
+<script src="demand-report.js?v=fields2"></script>
+<script src="demand-act.js?v=confirmstay1"></script>
 <script src="enrich-act.js?v=enrichfix4"></script>
-<script src="match-act.js"></script>
-<script src="scheme-act.js"></script>
+<script src="match-act.js?v=dropask1"></script>
+<script src="scheme-act.js?v=dropask1"></script>
 <script>
 const W = 1440, H = 900, $ = s => document.querySelector(s), wait = ms => new Promise(r => setTimeout(r, ms));
 const QS = new URLSearchParams(location.search), INVITE = QS.has('invite');
@@ -945,7 +926,7 @@ function ui() {
   LINES.forEach((id, j) => { const e = $(id), v = vis(j + .55, j + 1.62); e.style.opacity = v; e.style.transform = `translateY(${(1 - v) * 10}px)`; e.classList.remove('on', 'off');
     const cs = e._cs || (e._cs = [...e.querySelectorAll('.c')]), lit = clamp((Q - (j + .6)) / .55) * cs.length; cs.forEach((c, n) => c.classList.toggle('on', n < lit)); });
   const od = $('#odo'); const ov = vis(1.62, 2.62); od.style.opacity = ov; const fut = Q > 2.05; od.classList.toggle('future', fut);
-  $('#olab').textContent = fut ? '未来 · 数字生产力' : '今天 · 网络中的智能体'; odoSet(Q < 1.75 ? '0' : fut ? '10,000,000,000' : '2,898');
+  $('#olab').textContent = fut ? '未来 · 数字生产力' : '今天 · 网络中的智能体'; odoSet(Q < 1.75 ? '0' : fut ? '10,000,000,000' : '3,000');
   const w = Q > 4.75; if (w !== shownWelcome && !issuing) { shownWelcome = w; show(w ? 'welcome' : 'story'); if (w) { try { buildSpec(); } catch (e) { console.warn('buildSpec', e); } } }
   const textOn = shownWelcome && !$('#after').classList.contains('on'), tn = now();
   if (textOn && welcomeAt < 0) { welcomeAt = tn; offAt = -1; } else if (!textOn && welcomeAt >= 0) { welcomeAt = -1; offAt = tn; }
@@ -1103,7 +1084,7 @@ document.getElementById('goDemand').onclick = () => {
   UX.goDemand();
 };
 window.UX && UX.init(1, 'dark');
-// 截图/演示快捷：?demo=after|demand|site|match|scheme（旧 bridge=demand）
+// 截图/演示快捷：?demo=after|demand|demand-flow|site|match|scheme|report（旧 bridge=demand）
 (async function demoMode(){
   const qs = new URLSearchParams(location.search);
   const d = qs.get('demo');
@@ -1116,10 +1097,16 @@ window.UX && UX.init(1, 'dark');
     show('after'); $('#chipme').classList.add('on'); $('#hi').textContent = '欢迎你，邓义。'; const sk=$('#skip'); if(sk) sk.style.display='none';
     issuing = true; scrollTo(0, innerHeight * 5.2);
   };
-  if (d === 'after' || d === 'bridge' || d === 'demand' || d === 'site' || d === 'register') {
+  if (d === 'after' || d === 'bridge' || d === 'demand' || d === 'demand-flow' || d === 'site' || d === 'register') {
     boot();
     if (d === 'register') { show('issue'); return; }
     if (d === 'bridge' || d === 'demand') setTimeout(() => UX.goDemand(), 400);
+    if (d === 'demand-flow') {
+      setTimeout(async () => {
+        await window.__enterDemandAct({ instant: true });
+        if (window.__demandJumpFlow) window.__demandJumpFlow('city-ops');
+      }, 400);
+    }
     if (d === 'site') {
       setTimeout(async () => {
         await window.__enterDemandAct({ instant: true });
@@ -1127,25 +1114,22 @@ window.UX && UX.init(1, 'dark');
       }, 400);
     }
   }
-  if (d === 'enrich') {
-    boot();
-    window.UX && UX.writeRun({ reqId:'REQ-CITY-OPS-0001', caseId:'city-ops', scene:'城运视频识别', needCount:1, taskName:'重点道路视频事件智能识别与工单联动' });
-    setTimeout(() => window.__enterEnrichAct({ instant: true }), 500);
-  }
-  if (d === 'match' || d === 'scheme') {
+  if (d === 'enrich' || d === 'match' || d === 'scheme') {
     boot();
     window.UX && UX.writeRun({
       reqId: 'REQ-CITY-OPS-0001', caseId: 'city-ops', scene: '城运视频识别',
       taskName: '重点道路视频事件智能识别与工单联动',
-      preference: qs.get('pref') || 'local',
-      preferenceLabel: ({fast:'上线快',cheap:'成本低',local:'政务云'})[qs.get('pref')||'local'],
-      preferenceSeed: qs.get('pref') || 'local',
+      ...(qs.get('pref') ? {
+        preference: qs.get('pref'),
+        preferenceLabel: ({fast:'上线快',cheap:'成本低',local:'政务云'})[qs.get('pref')],
+        preferenceSeed: qs.get('pref'),
+      } : {}),
       coverage: 11, coverageTotal: 12, coverageA: '7/7', coverageB: '4/5',
       agentsA: 25, agentsB: 12, agentsTotal: 33, skillsTotal: 35,
       matchDone: d === 'scheme',
       enrich: { scale:'城市级多点', deploy:'政务云', cameras:'约 1.2 万路试点', systems:['视频平台','工单系统','热线'], duty:'城运中心值班' }
     });
-    if (d === 'match') {
+    if (d === 'match' || d === 'enrich') {
       setTimeout(async () => {
         await window.__enterMatchAct({ instant: true });
         const tJump = qs.get('t');
@@ -1161,13 +1145,34 @@ window.UX && UX.init(1, 'dark');
       }, 500);
     }
   }
+  if (d === 'report') {
+    boot();
+    window.UX && UX.writeRun({
+      reqId: 'REQ-CITY-OPS-0001', caseId: 'city-ops', scene: '城运视频识别',
+      title: '城市运行视频智能识别与工单联动试点',
+      taskName: '重点道路视频事件智能识别与工单联动',
+      demandStatus: 'confirmed',
+      matchDone: true,
+      fromDemand: true,
+      org: '市城市运行管理中心',
+      industry: '政务与公共服务/城市治理',
+      scale: '未填写',
+      updatedAt: '2026.11.11 13:00',
+      confirmedAt: '2026.11.11 13:00',
+    });
+    setTimeout(async () => {
+      await window.__enterDemandAct({ instant: true });
+      if (window.__demandJumpFlow) window.__demandJumpFlow('city-ops', { confirmed: true, openReport: true, includeMatch: true, stamp: '2026.11.11 13:00' });
+      window.__demoPainted = true;
+    }, 400);
+  }
 })();
 // 缩放 + 启动
 function fit() { const s = Math.min(innerWidth / W, innerHeight / H), a = $('#app'); a.style.transform = `translate(${(innerWidth - W * s) / 2}px,${(innerHeight - H * s) / 2}px) scale(${s})`; $('#scroll').style.height = (innerHeight * 6.2) + 'px'; }
 addEventListener('resize', fit); fit();
 Promise.all([document.fonts.ready, new Promise(r => { const im = $('#earthImg'); im.complete ? r() : (im.onload = r); })]).then(() => { try { sampleLights(); } catch (e) { console.warn('sampleLights', e); } try { sampleGlyph(); } catch (e) { console.warn('sampleGlyph', e); } window.__ready = true; T0 = performance.now(); if (INVITE) scrollTo(0, innerHeight * 5.2); if (location.hash.startsWith('#q=')) scrollTo(0, innerHeight * +location.hash.slice(3)); onScroll(); requestAnimationFrame(draw); });
 </script>
-<script src="checklist-proto.js"></script>
+<script src="checklist-proto.js?v=confirmstay1"></script>
 <script>
 // rebind welcome CTA after narrative script
 (function(){

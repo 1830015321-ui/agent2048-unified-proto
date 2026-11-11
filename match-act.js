@@ -65,12 +65,11 @@ const RING = Array.from({ length: 18 }, (_, k) => {
 const PH = [['需求入场', 0], ['检索技能库', 2.5], ['查找候选技能', 8], ['匹配候选智能体', 15.5], ['按使用对象组网', 26], ['生成方案', 35.5]];
 const LOGS = [
   [.4, '已确认需求 · 城运视频识别 · 1 个任务'],
-  [3, '检索 2,898 个智能体 · 7,111 项技能'],
+  [3, '检索 3000+ 个智能体 · 10000+ 项技能'],
   [8.4, '按城运中心 7 环节分头召回'],
   [13.5, '召回候选 186 个'],
   [16.5, '核验身份与测评等级'],
   [19.4, '保留双视角候选 · 筛掉能力不符项'],
-  [21, '等待你的偏好…'],
   [27, '方案 A 城运中心视角：环节逐个入网'],
   [29.9, '方案 B：违规行为整治 · 系统补充 3 Agent'],
   [31.9, '旁路接入 · 数据隐私保护（脱敏）'],
@@ -105,7 +104,6 @@ function fillNode(n) {
   nodeEls[n.id].innerHTML = `<small>${n.late ? '旁路入网' : '入网 · ' + n.id.toUpperCase()}</small><b>${n.name}</b><span>${n.role}</span><div class="cv">${(n.cov || []).map(c => `<em>${NEEDS[c][0]}</em>`).join('')}${chips}</div>${tag ? `<span class="tg">${tag}</span>` : ''}`;
 }
 NODES.forEach(fillNode);
-$$('#mAsk button').forEach(b => b.onclick = () => choose(b.dataset.v));
 function choose(v, auto) {
   if (pref) return;
   pref = v;
@@ -164,8 +162,7 @@ function writeMatchDone() {
     agentsTotal: CITY.agentsTotal || 39,
     skillsTotal: CITY.skillsTotal || 36,
     schemes: schemesSummary(),
-    preference: pref,
-    preferenceLabel: PREF_LABEL[pref] || pref,
+    ...(pref ? { preference: pref, preferenceLabel: PREF_LABEL[pref] || pref } : {}),
   });
 }
 
@@ -337,16 +334,16 @@ function render() {
   if (t >= 35.5) $('#mCov').innerHTML = `11<em>/12</em>`;
   else $('#mCov').innerHTML = `${covered.size}<em> / 7</em>`;
   const libA = $('#mNA'), libS = $('#mNS'), libSnap = $('#mSnap');
-  if (libA) libA.innerHTML = '2,898 <em>个智能体</em>';
-  if (libS) libS.textContent = '7,111 项技能';
+  const agLab = (window.CITY_OPS && CITY_OPS.libraryAgentsLabel) || '3000+';
+  const skLab = (window.CITY_OPS && CITY_OPS.librarySkillsLabel) || '10000+';
+  if (libA) libA.innerHTML = agLab + ' <em>个智能体</em>';
+  if (libS) libS.textContent = skLab + ' 项技能';
   if (libSnap) libSnap.textContent = '2026-11-10 数据快照';
   $$('.ph').forEach((e, k) => { const a = PH[k][1], b = PH[k + 1] ? PH[k + 1][1] : 99; e.classList.toggle('on', t >= a && t < b); e.classList.toggle('done', t >= b); });
   $('#mLog').innerHTML = LOGS.filter(l => l[0] <= t).slice(-3).map(l => `<div><b>00:${String(Math.floor(l[0])).padStart(2, '0')}</b>${l[1]}</div>`).join('');
   $('#mClk').textContent = `00:${String(Math.floor(t)).padStart(2, '0')}`;
-  const askOn = t > 20.5 && t < 26.6; $('#mAsk').classList.toggle('on', askOn); $('#mAskBar').style.width = seg(t, 20.5, 26.5) * 100 + '%';
   const slogan = $('#mSlogan');
-  if (slogan) slogan.style.opacity = (askOn || t >= 36.5) ? 0 : 1;
-  if (t > 26.5 && !pref) { const r = (window.UX && UX.readRun && UX.readRun()) || {}; choose(r.preferenceSeed || r.preference || 'local', true); }
+  if (slogan) slogan.style.opacity = t >= 36.5 ? 0 : 1;
 
   const settled = t >= 38 && covered.size >= 7;
   const doneEl = $('#mDone'), ctaEl = $('#mCta'), resultEl = $('#mResult');
@@ -414,7 +411,6 @@ window.__matchSeek = function (tt) {
     $$('#mAsk button').forEach(b => b.classList.toggle('sel', b.dataset.v === pref));
     NODES.forEach(fillNode);
   }
-  if (t > 26.5 && !pref) { choose(r.preferenceSeed || r.preference || 'local', true); }
   if (t >= 36.5) { const resultEl = $('#mResult'); if (resultEl) { resultEl.dataset.built = ''; } }
   render();
 };
@@ -447,7 +443,7 @@ window.__enterMatchAct = async function (opts) {
   const app = document.getElementById('app');
   const demand = document.getElementById('demandAct');
   if (demand) demand.classList.add('leaving');
-  window.UX && UX.init(4, 'dark');
+  window.UX && UX.init(3, 'dark');
   if (app) { app.classList.add('match-mode'); app.classList.remove('demand-mode', 'enrich-mode'); }
   const enrich = document.getElementById('enrichAct');
   if (enrich) { enrich.classList.add('leaving'); enrich.classList.remove('on'); enrich.setAttribute('aria-hidden', 'true'); }
