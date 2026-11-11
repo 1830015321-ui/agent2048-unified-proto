@@ -413,8 +413,11 @@
 
     host.querySelectorAll('.dm-aud button').forEach(btn => {
       btn.onclick = () => {
-        demandState.audienceByTask[btn.parentElement.dataset.tid] = btn.dataset.aud;
+        const tid = btn.parentElement.dataset.tid;
+        const aud = btn.dataset.aud;
+        demandState.audienceByTask[tid] = aud;
         renderTaskCards(host, demand);
+        if (window.__demandSelectPerspective) window.__demandSelectPerspective(tid, aud);
       };
     });
 
@@ -436,44 +439,50 @@
         pop.querySelector('button').onclick = () => { pop.hidden = true; };
       });
     });
+    const fv = document.getElementById('dmFlowView');
+    if (fv && !fv.hidden && window.__demandShowProcess) window.__demandShowProcess(demand);
+  }
+
+  function ensureDemoExtras() {
+    let extras = document.getElementById('dmDemoExtras');
+    if (extras) return extras;
+    const tools = document.querySelector('#demandAct .dm-composer .dm-tools');
+    if (!tools) return null;
+    extras = document.createElement('div');
+    extras.id = 'dmDemoExtras';
+    extras.hidden = true;
+    extras.innerHTML = `<span class="dm-demo-lab">组网结果演示入口：</span>
+      <button type="button" data-out="success">成功</button>
+      <button type="button" data-out="partial">部分匹配</button>
+      <button type="button" data-out="fail">失败</button>`;
+    tools.parentElement.appendChild(extras);
+    extras.querySelectorAll('button[data-out]').forEach(b => {
+      b.onclick = async () => {
+        if (window.UX && UX.writeRun) UX.writeRun({ matchOutcome: b.dataset.out, caseId: demandState.caseId || 'education' });
+        await confirmAndNetwork(b.dataset.out);
+      };
+    });
+    return extras;
   }
 
   function ensureDemandHooks() {
     const panel = document.getElementById('dmPanelContent');
     if (!panel) return;
-    let stack = document.getElementById('dmTaskStack');
-    if (!stack) {
-      // replace old single task section with stack
-      const oldSec = panel.querySelector('.dm-sec:nth-of-type(3)') || panel.querySelector('#dmTask')?.closest('.dm-sec');
-      stack = document.createElement('section');
-      stack.className = 'dm-sec';
-      stack.id = 'dmTaskSec';
-      stack.innerHTML = `<h3>业务任务</h3><div class="dm-task-stack" id="dmTaskStack"></div>
-        <div class="dm-actions-row">
-          <button type="button" class="dm-btn" id="dmRegen">重新生成工作流</button>
-          <button type="button" class="dm-btn solid" id="dmConfirmAll" disabled>确认需求并开始组网</button>
-        </div>
-        <div class="dm-demo-outcomes" id="dmDemoOutcomes" hidden>
-          <span style="font:500 11.5px NSans;color:#9CA3AF">组网结果演示入口：</span>
-          <button type="button" data-out="success">成功</button>
-          <button type="button" data-out="partial">部分匹配</button>
-          <button type="button" data-out="fail">失败</button>
-        </div>`;
-      if (oldSec) oldSec.replaceWith(stack);
-      else panel.appendChild(stack);
-      // hide old flow placeholder or keep for match summary
-    }
-    // dual case buttons in empty / composer
-    const empty = document.getElementById('dmEmpty');
-    if (empty && !empty.querySelector('.dm-case.edu')) {
-      empty.innerHTML = `<b>先在左侧描述你的需求</b>
-        <p>平台会整理成结构化需求，供你确认后匹配组网。演示可填入城运或教育案例。</p>
-        <div class="dm-case-row">
-          <button type="button" class="dm-case" id="dmUseCase">使用城运案例</button>
-          <button type="button" class="dm-case edu" id="dmUseEdu">使用教育案例</button>
-        </div>`;
-      document.getElementById('dmUseCase').onclick = () => window.__demandRunCase && window.__demandRunCase({ autoSend: true });
-      document.getElementById('dmUseEdu').onclick = () => bootEducationDemand({ autoSend: true });
+    ensureDemoExtras();
+    // dual case buttons in the right-side empty / composer
+    if (!document.getElementById('dmUseEdu')) {
+      const host = document.getElementById('dmUseCase');
+      if (host) {
+        const b = document.createElement('button');
+        b.type = 'button';
+        b.className = 'dm-case edu';
+        b.id = 'dmUseEdu';
+        b.textContent = '使用教育案例';
+        (host.parentElement || host).appendChild(b);
+        const city = document.getElementById('dmUseCase');
+        if (city) city.onclick = () => window.__demandRunCase && window.__demandRunCase({ autoSend: true });
+        b.onclick = () => bootEducationDemand({ autoSend: true });
+      }
     }
     const tools = document.querySelector('#demandAct .dm-tools');
     if (tools && !document.getElementById('dmFillEdu')) {
@@ -485,33 +494,6 @@
       b2.onclick = () => bootEducationDemand({ autoSend: false });
     }
 
-    const regen = document.getElementById('dmRegen');
-    if (regen && !regen._bound) {
-      regen._bound = true;
-      regen.onclick = () => {
-        if (!demandState.demand) return;
-        demandState.regenCount += 1;
-        // simulate slight change: append note to summary
-        const note = `（已重新生成工作流 · 演示第 ${demandState.regenCount} 次）`;
-        if (typeof demandState.demand.summary === 'object') {
-          demandState.demand.summary.text = textOf(demandState.demand.summary).replace(/（已重新生成[^）]*）/g, '') + note;
-        }
-        applyDemandToPanel(demandState.demand);
-        const toast = document.getElementById('dmToast');
-        if (toast) { toast.textContent = '已重新生成工作流（Prototype 模拟）'; toast.hidden = false; setTimeout(() => toast.hidden = true, 1800); }
-      };
-    }
-    const confirmAll = document.getElementById('dmConfirmAll');
-    if (confirmAll && !confirmAll._bound) {
-      confirmAll._bound = true;
-      confirmAll.onclick = () => confirmAndNetwork();
-    }
-    document.querySelectorAll('#dmDemoOutcomes button').forEach(b => {
-      b.onclick = async () => {
-        if (window.UX && UX.writeRun) UX.writeRun({ matchOutcome: b.dataset.out, caseId: demandState.caseId || 'education' });
-        await confirmAndNetwork(b.dataset.out);
-      };
-    });
   }
 
   function applyDemandToPanel(demand) {
@@ -525,55 +507,32 @@
       }
     });
     const title = demand.title || textOf(demand.summary);
-    const org = textOf(demand.customer && demand.customer.name) || demand.org || '—';
-    const industry = textOf(demand.customer && demand.customer.industry) || demand.industry || '—';
-    const summary = textOf(demand.summary);
     const set = (id, v) => { const n = document.getElementById(id); if (n) n.textContent = v; };
     set('dmChatTitle', demand.chatTitle || title);
     set('dmReqTitle', title);
-    set('dmOrg', org);
-    set('dmIndustry', industry);
-    set('dmScale', demand.scale || '未填写');
-    set('dmSummary', summary);
     const empty = document.getElementById('dmPanelEmpty');
     const content = document.getElementById('dmPanelContent');
     if (empty) empty.hidden = true;
     if (content) content.hidden = false;
-    const stack = document.getElementById('dmTaskStack');
-    if (stack) renderTaskCards(stack, demand);
 
-    // clarifications
-    const ul = document.getElementById('dmClarify');
-    if (ul) {
-      const qs = (demand.clarifications && (demand.clarifications.suggested || demand.clarifications)) || [];
-      const list = Array.isArray(qs) ? qs : [];
-      ul.innerHTML = list.map((q, i) => {
-        const t = textOf(q);
-        return `<li data-i="${i}"><p class="q">${i + 1}. ${esc(t)}</p><p class="ans"></p>
-          <button type="button" class="dm-btn-mini">提交模拟作答</button></li>`;
-      }).join('');
-      ul.querySelectorAll('.dm-btn-mini').forEach((btn, i) => {
-        btn.onclick = () => {
-          const sample = i === 0 ? '更侧重多角色协作逻辑设计。' : '题库主要为 Excel 导出，后续可接平台接口。';
-          const li = btn.closest('li');
-          li.classList.add('answered');
-          li.querySelector('.ans').textContent = '已补充：' + sample;
-        };
+    if (window.__demandAdoptSource) {
+      window.__demandAdoptSource(demand, demandState.confirmed ? 'done' : 'ready');
+    } else if (window.DemandReport) {
+      DemandReport.setSession({
+        source: demand,
+        status: demandState.confirmed ? 'done' : 'ready',
+        updatedAt: DemandReport.getSession().updatedAt || DemandReport.nowStamp(),
       });
+      DemandReport.paintPanel();
+      const view = document.getElementById('dmView');
+      const exp = document.getElementById('dmExport');
+      if (view) view.disabled = false;
+      if (exp) exp.disabled = false;
     }
-
-    // enable confirm
-    const c1 = document.getElementById('dmConfirm');
-    const c2 = document.getElementById('dmConfirmAll');
-    if (c1) { c1.disabled = false; c1.textContent = '确认需求'; }
-    if (c2) { c2.disabled = false; }
-    const badge = document.getElementById('dmBadge');
-    if (badge) { badge.dataset.st = 'ready'; badge.textContent = '待确认'; }
-    const outcomes = document.getElementById('dmDemoOutcomes');
-    if (outcomes) outcomes.hidden = demandState.caseId !== 'education';
-    // sync old match button label
+    const extras = ensureDemoExtras();
+    if (extras) extras.hidden = demandState.caseId !== 'education';
     const m = document.getElementById('dmMatch');
-    if (m) { m.disabled = true; m.textContent = '匹配组网'; }
+    if (m) { m.disabled = !demandState.confirmed; m.textContent = '匹配组网'; }
   }
 
   async function bootEducationDemand(opts) {
@@ -600,35 +559,51 @@
       return;
     }
 
-    // paint chat
-    const log = document.getElementById('dmLog');
-    if (log) {
-      log.innerHTML = '';
-      const u = document.createElement('div');
-      u.className = 'dm-msg user';
-      u.innerHTML = `<span class="who">你的消息</span><div class="dm-bubble">${esc(demand.userText)}</div>`;
-      log.appendChild(u);
-      const b = document.createElement('div');
-      b.className = 'dm-msg bot';
-      b.innerHTML = `<span class="who">助手</span><div class="dm-bubble">${esc(textOf(demand.summary))}
-        <div class="suggest"><b>已解析为 2 个任务 · 5 个使用对象视角</b>
-        <ol><li>学情分析与个性化学习建议（教师、学生）</li>
-        <li>分层练习资源准备与家校协同（教师、学生、家长）</li></ol></div></div>`;
-      log.appendChild(b);
+    const instant = !!(opts.instant || opts.skipToMatch);
+
+    const paintChatAndDoc = async () => {
+      const log = document.getElementById('dmLog');
+      if (log) {
+        log.hidden = false;
+        log.innerHTML = '';
+        const u = document.createElement('div');
+        u.className = 'dm-msg user';
+        u.innerHTML = `<span class="who">你的消息</span><div class="dm-bubble">${esc(demand.userText)}</div>`;
+        log.appendChild(u);
+        const b = document.createElement('div');
+        b.className = 'dm-msg bot';
+        b.innerHTML = `<span class="who">助手</span><div class="dm-bubble">${esc(textOf(demand.summary))}
+          <div class="suggest"><b>已解析为 2 个任务 · 5 个使用对象视角</b>
+          <ol><li>学情分析与个性化学习建议（教师、学生）</li>
+          <li>分层练习资源准备与家校协同（教师、学生、家长）</li></ol></div></div>`;
+        log.appendChild(b);
+      }
+      applyDemandToPanel(demand);
+      if (window.UX && UX.writeRun) {
+        UX.writeRun({
+          caseId: 'education',
+          reqId: demand.reqId,
+          scene: '中学智能教学',
+          title: demand.title,
+          chatTitle: demand.chatTitle,
+          taskName: (demand.tasks[0] || {}).name,
+          needCount: (demand.tasks || []).length,
+          matchOutcome: opts.outcome || 'success',
+        });
+      }
+    };
+
+    const paintFlow = async () => {
+      if (window.__demandShowProcess) window.__demandShowProcess(demand);
+    };
+
+    if (window.__demandPlayOrganize) {
+      await window.__demandPlayOrganize({ instant, onStep1: paintChatAndDoc, onDone: paintFlow });
+    } else {
+      await paintChatAndDoc();
+      await paintFlow();
     }
-    applyDemandToPanel(demand);
-    if (window.UX && UX.writeRun) {
-      UX.writeRun({
-        caseId: 'education',
-        reqId: demand.reqId,
-        scene: '中学智能教学',
-        title: demand.title,
-        chatTitle: demand.chatTitle,
-        taskName: (demand.tasks[0] || {}).name,
-        needCount: (demand.tasks || []).length,
-        matchOutcome: opts.outcome || 'success',
-      });
-    }
+
     if (opts.autoConfirm || opts.skipToMatch) {
       await wait(opts.instant ? 80 : 300);
       await confirmAndNetwork(opts.outcome || 'success', { skipEnrich: true, jumpResult: !!opts.skipToMatch });
@@ -640,6 +615,12 @@
     const demand = demandState.demand;
     if (!demand) return;
     demandState.confirmed = true;
+    const stamp = (window.DemandReport && DemandReport.nowStamp()) || '';
+    if (window.DemandReport) {
+      DemandReport.setSession({ source: demand, status: 'done', confirmedAt: stamp, updatedAt: DemandReport.getSession().updatedAt || stamp });
+      DemandReport.paintPanel();
+    }
+    if (window.__demandSetStatus) window.__demandSetStatus('done', { armMatch: true });
     const badge = document.getElementById('dmBadge');
     if (badge) { badge.dataset.st = 'done'; badge.textContent = '已确认'; }
     const c1 = document.getElementById('dmConfirm');
@@ -651,7 +632,7 @@
 
     const out = outcome || ((window.UX && UX.readRun && UX.readRun().matchOutcome) || (demandState.caseId === 'education' ? 'success' : 'partial'));
     if (window.UX && UX.writeRun) {
-      UX.writeRun({
+      const run = {
         caseId: demand.caseId || demandState.caseId,
         reqId: demand.reqId,
         scene: demand.scene || (demandState.caseId === 'education' ? '中学智能教学' : '城运视频识别'),
@@ -661,7 +642,14 @@
         fromDemand: true,
         needCount: (demand.tasks || []).length || 1,
         taskName: (demand.tasks && demand.tasks[0] && demand.tasks[0].name) || demand.taskName,
-      });
+      };
+      if (demand.org) run.org = demand.org;
+      if (demand.industry) run.industry = demand.industry;
+      if (demand.scale) run.scale = demand.scale;
+      if (demand.chatTitle) run.chatTitle = demand.chatTitle;
+      if (demand.systems) run.systems = demand.systems;
+      if (stamp) { run.confirmedAt = stamp; run.updatedAt = (window.DemandReport && DemandReport.getSession().updatedAt) || stamp; }
+      UX.writeRun(run);
     }
     saveHistoryItem({
       id: 'hist-' + (demand.caseId || 'run') + '-' + Date.now(),
@@ -675,13 +663,9 @@
       matchOutcome: out,
     });
 
-    // city-ops keeps enrich step unless skip
-    if (demandState.caseId === 'education' || opts.skipEnrich) {
-      if (window.UX && UX.goMatch) UX.goMatch();
-      else if (window.__enterMatchAct) window.__enterMatchAct({ jumpResult: !!opts.jumpResult });
-    } else if (window.UX && UX.goEnrich) {
-      UX.goEnrich();
-    }
+    // 确认流程后直接组网（城运 / 教育均不再经过完善信息）
+    if (window.UX && UX.goMatch) UX.goMatch();
+    else if (window.__enterMatchAct) window.__enterMatchAct({ jumpResult: !!opts.jumpResult });
   }
 
   /* ========== Match: carousel + outcomes ========== */
@@ -843,14 +827,14 @@
   }
 
   function patchDemandConfirm() {
-    // unify old confirm / match → confirmAll semantics when structured demand is ready
+    // 确认需求只在需求幕内核对并扫流程；匹配组网才进入组网
     document.addEventListener('click', e => {
-      const id = e.target && e.target.id;
-      if ((id === 'dmConfirm' || id === 'dmMatch') && demandState.demand) {
+      const t = e.target && (e.target.id ? e.target : e.target.closest && e.target.closest('button'));
+      const id = t && t.id;
+      if (id === 'dmMatch' && demandState.demand) {
         e.preventDefault();
         e.stopPropagation();
-        if (id === 'dmConfirm' || !demandState.confirmed) confirmAndNetwork();
-        else confirmAndNetwork((window.UX && UX.readRun && UX.readRun().matchOutcome) || undefined);
+        confirmAndNetwork((window.UX && UX.readRun && UX.readRun().matchOutcome) || undefined);
       }
     }, true);
   }
@@ -1011,13 +995,19 @@
           clarifications: { suggested: (data.clarifications || []).map(t => ({ text: t })) },
           userText: data.userText,
         };
-        // prefer checklist multi-task renderer
-        applyDemandToPanel(demandState.demand);
-        // restore city clarifications mini answers already bound by demand-act — ok
+        // 右侧文档已由 demand-act / DemandReport 绘制，这里只保留结构化 demand 供确认组网
       }
+    };
+    window.__demandChecklistReset = function () {
+      demandState.caseId = null;
+      demandState.demand = null;
+      demandState.audienceByTask = {};
+      demandState.confirmed = false;
+      demandState.regenCount = 0;
     };
     window.ChecklistProto = {
       showLogin, showWorkbench, bootEducationDemand, confirmAndNetwork, seedHistory,
+      ensureDemandHooks,
     };
   }
 
